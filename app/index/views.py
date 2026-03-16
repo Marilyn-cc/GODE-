@@ -4,7 +4,6 @@ from django.shortcuts import render
 
 def home(request):
     return render(request, 'index/dashboard.html')
-
     
 def cows(request):
     return render(request, 'index/cows.html')
