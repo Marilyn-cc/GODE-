@@ -12,4 +12,8 @@ def cows(request):
 
 
 def home(request):
-    return render(request, 'index/cow.html')   
+    return render(request, 'index/cow.html') 
+
+
+def production(request):
+    return render(request, 'index/production.html') 
