@@ -11,3 +11,6 @@ def cows(request):
 
 def production(request):
     return render(request, 'index/production.html')
+
+def mpesa(request):
+    return render(request, 'index/mpesa.html')
