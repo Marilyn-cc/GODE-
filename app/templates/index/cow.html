@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>GODE · Per-Cow Yield</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f4fb;--surface:#fff;--b6:#e8f1fc;--border:#d6e0f0;
+  --b1:#1e3a5f;--b2:#2563a8;--b3:#4a90d9;--b4:#7eb8f7;--b5:#b3d4f7;
+  --success:#2d6a2f;--warn:#d97706;--danger:#dc2626;
+  --text:#0f172a;--text2:#64748b;--muted:#94a3b8;
+  --sans:'Plus Jakarta Sans',sans-serif;--mono:'IBM Plex Mono',monospace;
+  --grad-h:linear-gradient(90deg,#1e3a5f 0%,#4a90d9 100%);
+}
+html{font-size:13.5px}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;display:flex}
+
+/* ── SIDEBAR ── */
+aside{width:216px;min-height:100vh;background:var(--b1);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:100}
+.logo{padding:22px 18px 16px;border-bottom:1px solid rgba(255,255,255,.12)}
+.logo-img-wrap{display:flex;align-items:center;gap:10px}
+.logo-img-sidebar{width:36px;height:36px;object-fit:contain;filter:brightness(0) invert(1)}
+.logo-mark{font-weight:800;font-size:1.2rem;letter-spacing:-.5px;color:#fff}
+.logo-sub{font-family:var(--mono);font-size:.56rem;color:rgba(255,255,255,.5);letter-spacing:.1em;margin-top:1px}
+nav{padding:14px 10px;flex:1}
+.nav-label{font-family:var(--mono);font-size:.57rem;color:rgba(255,255,255,.4);letter-spacing:.12em;text-transform:uppercase;padding:12px 10px 5px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:7px;cursor:pointer;color:rgba(255,255,255,.65);font-size:.8rem;font-weight:600;transition:all .15s;margin-bottom:1px}
+.nav-item:hover{background:rgba(255,255,255,.1);color:#fff}
+.nav-item.active{background:rgba(255,255,255,.18);color:#fff}
+.nav-icon{width:15px;height:15px;flex-shrink:0}
+.sidebar-footer{padding:14px 16px;border-top:1px solid rgba(255,255,255,.12)}
+.user-chip{display:flex;align-items:center;gap:10px}
+.avatar{width:32px;height:32px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.68rem;color:#fff;border:1.5px solid rgba(255,255,255,.3)}
+.user-info .name{font-size:.78rem;font-weight:700;color:#fff}
+.user-info .role{font-family:var(--mono);font-size:.57rem;color:rgba(255,255,255,.5)}
+
+/* ── MAIN ── */
+main{margin-left:216px;flex:1;display:flex;flex-direction:column}
+header{padding:16px 30px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface);position:sticky;top:0;z-index:10;box-shadow:0 1px 4px rgba(30,58,95,.06)}
+.page-title{font-size:1.05rem;font-weight:800}
+.page-date{font-family:var(--mono);font-size:.62rem;color:var(--text2);margin-top:2px}
+.header-actions{display:flex;align-items:center;gap:10px}
+.btn{padding:7px 14px;border-radius:7px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:var(--sans);font-size:.76rem;font-weight:600;cursor:pointer}
+.btn-primary{background:var(--b1);color:#fff;border-color:var(--b1)}
+.tab-bar{display:flex;gap:4px}
+.tab{padding:6px 14px;border-radius:6px;font-size:.78rem;font-weight:600;cursor:pointer;color:var(--text2)}
+.tab.active{background:var(--b6);color:var(--b1)}
+.content{padding:26px 30px;flex:1}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── KPI ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 16px;transition:box-shadow .2s;animation:fadeUp .4s ease both}
+.kpi:hover{box-shadow:0 4px 16px rgba(30,58,95,.1)}
+.kpi:nth-child(1){animation-delay:.04s}.kpi:nth-child(2){animation-delay:.08s}.kpi:nth-child(3){animation-delay:.12s}.kpi:nth-child(4){animation-delay:.16s}.kpi:nth-child(5){animation-delay:.20s}
+.kpi-blue{border-top:3px solid var(--b1)}.kpi-green{border-top:3px solid var(--success)}.kpi-warn{border-top:3px solid var(--warn)}.kpi-danger{border-top:3px solid var(--danger)}
+.kpi-label{font-family:var(--mono);font-size:.58rem;color:var(--text2);letter-spacing:.07em;text-transform:uppercase}
+.kpi-value{font-size:1.55rem;font-weight:800;margin:6px 0 4px;line-height:1}
+.kpi-change{font-family:var(--mono);font-size:.62rem;display:flex;align-items:center;gap:4px}
+.up{color:var(--success)}.down{color:var(--danger)}.warn{color:var(--warn)}.blue{color:var(--b1)}
+
+/* ── SECTION HEADER BANNER ── */
+.section-banner{
+  background:linear-gradient(135deg,#1e3a5f 0%,#2563a8 60%,#4a90d9 100%);
+  border-radius:12px;
+  padding:20px 24px;
+  margin-bottom:16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  animation:fadeUp .4s ease both;
+  animation-delay:.2s;
+}
+.banner-left h2{font-size:1rem;font-weight:800;color:#fff;margin-bottom:3px}
+.banner-left p{font-family:var(--mono);font-size:.62rem;color:rgba(255,255,255,.65)}
+.banner-stats{display:flex;gap:28px}
+.b-stat-val{font-size:1.2rem;font-weight:800;color:#fff;line-height:1}
+.b-stat-lbl{font-family:var(--mono);font-size:.56rem;color:rgba(255,255,255,.6);margin-top:2px}
+.banner-divider{width:1px;background:rgba(255,255,255,.2);align-self:stretch}
+
+/* ── CARD ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;transition:box-shadow .2s;animation:fadeUp .4s ease both;animation-delay:.2s}
+.card:hover{box-shadow:0 4px 16px rgba(30,58,95,.08)}
+.card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
+.card-title{font-weight:800;font-size:.88rem}
+.card-sub{font-family:var(--mono);font-size:.58rem;color:var(--text2);margin-top:2px}
+.tag{font-family:var(--mono);font-size:.56rem;padding:3px 8px;border-radius:5px;border:1px solid var(--border);color:var(--text2);background:var(--bg);white-space:nowrap}
+.tag-blue{border-color:var(--b4);color:var(--b1);background:var(--b6)}
+.tag-green{border-color:#86efac;color:var(--success);background:#f0fdf4}
+.tag-warn{border-color:#fcd34d;color:var(--warn);background:#fffbeb}
+.tag-red{border-color:#fca5a5;color:var(--danger);background:#fef2f2}
+
+/* ── TABLE ── */
+.cow-table{width:100%;border-collapse:collapse}
+.cow-table th{
+  font-family:var(--mono);font-size:.57rem;color:var(--text2);
+  letter-spacing:.05em;text-transform:uppercase;
+  text-align:left;padding:0 10px 10px 0;
+  border-bottom:2px solid var(--border);
+}
+.cow-table td{
+  padding:0 10px 0 0;
+  height:46px;
+  font-size:.78rem;
+  border-bottom:1px solid var(--border);
+  vertical-align:middle;
+}
+.cow-table tbody tr:last-child td{border-bottom:none}
+.cow-table tbody tr:hover td{background:#fafbff}
+
+/* cow identity cell */
+.cow-id-cell{display:flex;align-items:center;gap:9px}
+.cow-avatar{
+  width:30px;height:30px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:.6rem;font-weight:600;
+  background:var(--b6);color:var(--b1);flex-shrink:0;
+}
+.cow-avatar.alert{background:#fef2f2;color:var(--danger)}
+.cow-avatar.dry{background:#f1f5f9;color:var(--muted)}
+.cow-name{font-weight:700;font-size:.8rem;line-height:1.2}
+.cow-breed{font-family:var(--mono);font-size:.56rem;color:var(--muted);display:block}
+
+/* AM / PM cells */
+.session-cell{text-align:center}
+.session-val{font-family:var(--mono);font-size:.8rem;font-weight:600;display:block}
+.session-bar{height:4px;border-radius:2px;margin-top:4px}
+
+/* total yield bar */
+.yield-wrap{display:flex;align-items:center;gap:9px}
+.yield-track{flex:1;height:7px;background:var(--b6);border-radius:4px;overflow:hidden;min-width:80px}
+.yield-fill{height:100%;border-radius:4px}
+.yield-num{font-family:var(--mono);font-size:.78rem;font-weight:600;min-width:38px}
+
+/* 7-day sparkline */
+.spark{display:flex;align-items:flex-end;gap:2px;height:26px;width:66px}
+.spark-bar{flex:1;border-radius:2px;min-height:3px}
+
+/* status pill */
+.pill{font-family:var(--mono);font-size:.55rem;padding:3px 8px;border-radius:4px;white-space:nowrap;display:inline-block}
+.pill-top{background:#f0fdf4;color:var(--success);border:1px solid #86efac}
+.pill-ok{background:var(--b6);color:var(--b1);border:1px solid var(--b4)}
+.pill-watch{background:#fffbeb;color:var(--warn);border:1px solid #fcd34d}
+.pill-alert{background:#fef2f2;color:var(--danger);border:1px solid #fca5a5}
+.pill-dry{background:#f1f5f9;color:var(--muted);border:1px solid var(--border)}
+
+/* table footer summary */
+.table-footer{
+  display:flex;gap:24px;
+  padding:12px 0 0;
+  margin-top:2px;
+  border-top:2px solid var(--border);
+  flex-wrap:wrap;
+}
+.tf-item{font-family:var(--mono);font-size:.6rem;color:var(--text2)}
+.tf-item strong{color:var(--text)}
+
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:var(--b5);border-radius:2px}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside>
+  <div class="logo">
+    <div class="logo-img-wrap">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACYAAAAmCAYAAACoPemuAAAEvElEQVR4nO2XT2wUVRzHP+/NTLu7/bsUKEibFiRCSAExkGCERCFpREk1wSYc0GgCRjwgnuBgQgIHQePBagIRjaIxDReNgQP/IkVCwT8UKbZAQ0MklQBW2O7O7nZ3Z97z0O6yfwtbSeyh38tk572d93nf33vfNyO01poJKPl/AxTSJFixmgQrVpNgxWrCgpmP4iHJjNaAGL0nhCjY/2E0bjClFFprpDRSEOkoWmuUUggpkeOAFMUeSUprBJmO2OEwgaEQiYSDx1NCVWUlPq8nYxJCiId2UWv98I5pNFpppBxZlpd6r3K04wznL/Zw6/Yg4UgU13WxLJPy8jLqZtSy7KmFrFm9kjkN9WNCZANrrRFKKZ23YfSe0gop7u+R6zcG2NO2n1OdvzIci6O1xnFHyyoYLa/ENE2U0lRVltPa0szGDa1Mn1qTASGESK3P9Ps5jqUDpRa01hw/f5pnFi3lbOdF3tq2g0h0mDKfF601s2bWsrhpHo831OP1eAjaNpf7+unu7SNkh4nHE+xu+5zhWJyd27bkdSh7TMhaY8k/Ja9Ka6QQXLlxjS+OtlMS9NJ1tg+lFZZl8fLa1by0ZhXTaqbklKj/+g32fX2QjjM/886br7FubTMllpXaDOlj5XOsYCmTnZVSSCk5d7mLtkP7mVlRi+tolFBsbd3InNoGHMdBCIGUMseNSCSKz+fNAc+nDGOSYOkwGR2AwWCA9pPfc6LrJ/r+6sc0JAnHxTItPn57F6ueXIFSimDI5t5QEEPK1O61LItYLI40JFprfF4P06fW5C1pOqCZvRjTG5VSGIbBsfOn+PJIOz6PlwpPGVJKpFcSitjsPXyAlU3LsUyT9u8O89Her/BXV+O6LkKAUiMTNgxJOBxhyaIFfLvvw1QY5zMEQGY3ZGiU0zAEQ5Egjpsg4SYIRILcCwdRQtPd30Prrk3cGRpEIBgKhrBtG9sOEwzaRCJRXMchFouTSDhEosMIBA9KNHPs0Btpm183l3JfGTEngb+yihWN87GjYUotD4OBfwBNNDbMKy3Ps3RJE5Zl4TgOpmFiR8JsfW838XgCVylm1z8GgKsUpmHkLSOkHUnZbgkhkIzkWNPs+SxqXEDvwFVaml7g9Ilutr+7iWVLFmblnGZqjT/jOTs++IS794bwV1WgtGbd2ua8FuSUNH1X5tvCrlIYUnKhv4cDxw4ycC5AZ9fv1E6rYfPr62ltWYO/ujJnoAuXLtO2/xs6zvzClOoqbt6+w6ZXW9m5bUvqiMoAyb4+KPnTIW/f/Zsd73/KoSMdTPFXEYkOUz9rBosXzGNOYx2lJaXcDQTouXKN7t4+YrE4pmUSCtlsaG1h1/YtqUjJya1ssEIBmz2bpHN2OMKets/44ciP2OEorqtwlQs6s79pSKRhMLuhjs1vrGfdi80Fd2BBx9I7F1J62AJcu/4nxzs6+e3iHwzcvDV6iCtKSiz8VZU8MbeRZ59exnMrl+P1eHLeMAod3qnxkmDZcGOBKqUxjPsH+3AsRsgO4zouHk8plRXlqQkAOK6LkfZ7rGfnLWUxUlqjRx3MFzmuUgBIIRnPy+y4wdKVL2r+qx7JO/+jAMnWhP1KmgQrVpNgxWoSrFhNWLB/AcZXsQgc+7SvAAAAAElFTkSuQmCC" alt="GODE" class="logo-img-sidebar"/>
+      <div><div class="logo-mark">GODE</div><div class="logo-sub">AGRI-BUSINESS PLATFORM</div></div>
+    </div>
+  </div>
+  <nav>
+    <div class="nav-label">Operations</div>
+    <div class="nav-item"><svg class="nav-icon" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" fill="white" opacity=".9"/><rect x="9" y="1" width="6" height="6" rx="1.5" fill="white" opacity=".5"/><rect x="1" y="9" width="6" height="6" rx="1.5" fill="white" opacity=".5"/><rect x="9" y="9" width="6" height="6" rx="1.5" fill="white" opacity=".5"/></svg>Overview</div>
+    <div class="nav-item"><svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M2 14c0-3 2-5 6-5s6 2 6 5" stroke="white" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="5" r="3" stroke="white" stroke-width="1.4"/></svg>Milk Production</div>
+    <div class="nav-item active"><svg class="nav-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="white" stroke-width="1.4"/><path d="M8 5v3.5l2 1.5" stroke="white" stroke-width="1.4" stroke-linecap="round"/></svg>Per-Cow Yield</div>
+    <div class="nav-item"><svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M3 13V7M8 13V3M13 13V9" stroke="white" stroke-width="1.4" stroke-linecap="round"/></svg>Cow ROI</div>
+    <div class="nav-item"><svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M2 12l4-5 3 3 5-7" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Forecasting</div>
+    <div class="nav-label">Inventory</div>
+    <div class="nav-item"><svg class="nav-icon" viewBox="0 0 16 16" fill="none"><rect x="2" y="7" width="12" height="7" rx="1" stroke="white" stroke-width="1.4"/><path d="M5 7V5a3 3 0 016 0v2" stroke="white" stroke-width="1.4" stroke-linecap="round"/></svg>Value Addition</div>
+    <div class="nav-item"><svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M8 2L2 5v6l6 3 6-3V5L8 2z" stroke="white" stroke-width="1.4" stroke-linejoin="round"/></svg>Feed &amp; Inputs</div>
+    <div class="nav-label">Finance</div>
+    <div class="nav-item"><svg class="nav-icon" viewBox="0 0 16 16" fill="none"><rect x="2" y="4" width="12" height="9" rx="1.5" stroke="white" stroke-width="1.4"/><path d="M2 7h12M6 10h1M9 10h1" stroke="white" stroke-width="1.4" stroke-linecap="round"/></svg>M-Pesa Ledger</div>
+    <div class="nav-item"><svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M13 5c0 3.866-5 9-5 9S3 8.866 3 5a5 5 0 1110 0z" stroke="white" stroke-width="1.4"/><circle cx="8" cy="5" r="1.5" stroke="white" stroke-width="1.2"/></svg>Petro Shop</div>
+    <div class="nav-item"><svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M2 13V5l6-3 6 3v8" stroke="white" stroke-width="1.4" stroke-linejoin="round"/><rect x="6" y="9" width="4" height="4" rx=".5" stroke="white" stroke-width="1.2"/></svg>Wholesale</div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-chip">
+      <div class="avatar">GO</div>
+      <div class="user-info"><div class="name">G. Oruba</div><div class="role">Management · Admin</div></div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main>
+  <header>
+    <div>
+      <div class="page-title">Per-Cow Yield</div>
+      <div class="page-date">Wednesday, 11 June 2025 &nbsp;·&nbsp; 22 Cows · Oruba Farm</div>
+    </div>
+    <div class="header-actions">
+      <div class="tab-bar">
+        <div class="tab active">Today</div>
+        <div class="tab">This Week</div>
+        <div class="tab">This Month</div>
+      </div>
+      <button class="btn">Export CSV</button>
+      <button class="btn btn-primary">+ Log Yield</button>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi kpi-blue">
+        <div class="kpi-label">Herd Total — Today</div>
+        <div class="kpi-value blue">248 L</div>
+        <div class="kpi-change up">↑ 12L vs yesterday</div>
+      </div>
+      <div class="kpi kpi-green">
+        <div class="kpi-label">Herd Average / Cow</div>
+        <div class="kpi-value" style="color:var(--success)">13.8 L</div>
+        <div class="kpi-change warn">⚠ Target is 16.0 L</div>
+      </div>
+      <div class="kpi kpi-blue">
+        <div class="kpi-label">Top Yield — Single Cow</div>
+        <div class="kpi-value blue">22.4 L</div>
+        <div class="kpi-change" style="color:var(--text2)">#001 Daisy · Friesian</div>
+      </div>
+      <div class="kpi kpi-danger">
+        <div class="kpi-label">Lowest Yield — Active</div>
+        <div class="kpi-value" style="color:var(--danger)">9.0 L</div>
+        <div class="kpi-change down">#018 Pearl · declining</div>
+      </div>
+      <div class="kpi kpi-warn">
+        <div class="kpi-label">Gap to Herd Target</div>
+        <div class="kpi-value warn">−2.2 L</div>
+        <div class="kpi-change warn">Potential +39.6 L/day</div>
+      </div>
+    </div>
+
+    <!-- SECTION BANNER -->
+    <div class="section-banner">
+      <div class="banner-left">
+        <h2>Per-Cow Production — Today</h2>
+        <p>Individual milk yield · AM/PM session split · 7-day trend · production status per animal</p>
+      </div>
+      <div class="banner-stats">
+        <div>
+          <div class="b-stat-val">18</div>
+          <div class="b-stat-lbl">Active Milking</div>
+        </div>
+        <div class="banner-divider"></div>
+        <div>
+          <div class="b-stat-val">4</div>
+          <div class="b-stat-lbl">Dry Period</div>
+        </div>
+        <div class="banner-divider"></div>
+        <div>
+          <div class="b-stat-val">248 L</div>
+          <div class="b-stat-lbl">Total Produced</div>
+        </div>
+        <div class="banner-divider"></div>
+        <div>
+          <div class="b-stat-val" style="color:#fca5a5">2</div>
+          <div class="b-stat-lbl">Flagged ⚠</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABLE CARD -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Per-Cow Production — Today</div>
+          <div class="card-sub">Individual yield · AM/PM split · 7-day trend · status</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <span class="tag">22 Total Cows</span>
+          <span class="tag tag-green">18 Milking Today</span>
+          <span class="tag tag-red">2 Flagged</span>
+          <span class="tag" style="color:var(--muted)">4 Dry</span>
+        </div>
+      </div>
+
+      <table class="cow-table">
+        <thead>
+          <tr>
+            <th style="width:200px">Cow</th>
+            <th style="width:90px;text-align:center">AM Yield (L)</th>
+            <th style="width:90px;text-align:center">PM Yield (L)</th>
+            <th>Total Produced Today</th>
+            <th style="width:80px">7-Day Trend</th>
+            <th style="width:72px">vs Target</th>
+            <th style="width:108px">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <!-- ── TOP PERFORMERS ── -->
+          <tr>
+            <td>
+              <div class="cow-id-cell">
+                <div class="cow-avatar">#001</div>
+                <div><div class="cow-name">Daisy</div><div class="cow-breed">Friesian · 4yr</div></div>
+              </div>
+            </td>
+            <td class="session-cell">
+              <span class="session-val blue">13.2</span>
+              <div class="session-bar" style="background:#1e3a5f;width:83%"></div>
+            </td>
+            <td class="session-cell">
+              <span class="session-val" style="color:var(--b3)">9.2</span>
+              <div class="session-bar" style="background:#4a90d9;width:58%"></div>
+            </td>
+            <td>
+              <div class="yield-wrap">
+                <div class="yield-track"><div class="yield-fill" style="width:100%;background:var(--grad-h)"></div></div>
+                <span class="yield-num blue">22.4 L</span>
+              </div>
+            </td>
+            <td>
+              <div class="spark">
+                <div class="spark-bar" style="height:52%;background:var(--b5)"></div>
+                <div class="spark-bar" style="height:62%;background:var(--b4)"></div>
+                <div class="spark-bar" style="height:68%;background:var(--b3)"></div>
+                <div class="spark-bar" style="height:76%;background:var(--b3)"></div>
+                <div class="spark-bar" style="height:82%;background:var(--b2)"></div>
+                <div class="spark-bar" style="height:90%;background:var(--b1)"></div>
+                <div class="spark-bar" style="height:100%;background:var(--b1)"></div>
+              </div>
+            </td>
+            <td class="up" style="font-family:var(--mono);font-size:.72rem;font-weight:600">+40%</td>
+            <td><span class="pill pill-top">● Top Yield</span></td>
+          </tr>
+
+          <tr>
+            <td><div class="cow-id-cell"><div class="cow-avatar">#007</div><div><div class="cow-name">Rosie</div><div class="cow-breed">Ayrshire · 3yr</div></div></div></td>
+            <td class="session-cell"><span class="session-val blue">11.4</span><div class="session-bar" style="background:#1e3a5f;width:71%"></div></td>
+            <td class="session-cell"><span class="session-val" style="color:var(--b3)">8.4</span><div class="session-bar" style="background:#4a90d9;width:53%"></div></td>
+            <td><div class="yield-wrap"><div class="yield-track"><div class="yield-fill" style="width:88%;background:var(--grad-h)"></div></div><span class="yield-num blue">19.8 L</span></div></td>
+            <td><div class="spark"><div class="spark-bar" style="height:55%;background:var(--b5)"></div><div class="spark-bar" style="height:62%;background:var(--b4)"></div><div class="spark-bar" style="height:68%;background:var(--b3)"></div><div class="spark-bar" style="height:74%;background:var(--b3)"></div><div class="spark-bar" style="height:80%;background:var(--b2)"></div><div class="spark-bar" style="height:86%;background:var(--b1)"></div><div class="spark-bar" style="height:88%;background:var(--b1)"></div></div></td>
+            <td class="up" style="font-family:var(--mono);font-size:.72rem;font-weight:600">+24%</td>
+            <td><span class="pill pill-top">● On Target</span></td>
+          </tr>
+
+          <tr>
+            <td><div class="cow-id-cell"><div class="cow-avatar">#003</div><div><div class="cow-name">Bella</div><div class="cow-breed">Friesian · 5yr</div></div></div></td>
+            <td class="session-cell"><span class="session-val blue">10.8</span><div class="session-bar" style="background:#1e3a5f;width:68%"></div></td>
+            <td class="session-cell"><span class="session-val" style="color:var(--b3)">7.3</span><div class="session-bar" style="background:#4a90d9;width:46%"></div></td>
+            <td><div class="yield-wrap"><div class="yield-track"><div class="yield-fill" style="width:81%;background:var(--grad-h)"></div></div><span class="yield-num blue">18.1 L</span></div></td>
+            <td><div class="spark"><div class="spark-bar" style="height:62%;background:var(--b5)"></div><div class="spark-bar" style="height:65%;background:var(--b4)"></div><div class="spark-bar" style="height:68%;background:var(--b4)"></div><div class="spark-bar" style="height:70%;background:var(--b3)"></div><div class="spark-bar" style="height:74%;background:var(--b2)"></div><div class="spark-bar" style="height:78%;background:var(--b1)"></div><div class="spark-bar" style="height:80%;background:var(--b1)"></div></div></td>
+            <td class="up" style="font-family:var(--mono);font-size:.72rem;font-weight:600">+13%</td>
+            <td><span class="pill pill-top">● On Target</span></td>
+          </tr>
+
+          <tr>
+            <td><div class="cow-id-cell"><div class="cow-avatar">#009</div><div><div class="cow-name">Lola</div><div class="cow-breed">Friesian · 6yr</div></div></div></td>
+            <td class="session-cell"><span class="session-val blue">9.8</span><div class="session-bar" style="background:#1e3a5f;width:61%"></div></td>
+            <td class="session-cell"><span class="session-val" style="color:var(--b3)">7.5</span><div class="session-bar" style="background:#4a90d9;width:47%"></div></td>
+            <td><div class="yield-wrap"><div class="yield-track"><div class="yield-fill" style="width:77%;background:var(--grad-h)"></div></div><span class="yield-num blue">17.3 L</span></div></td>
+            <td><div class="spark"><div class="spark-bar" style="height:68%;background:var(--b4)"></div><div class="spark-bar" style="height:70%;background:var(--b4)"></div><div class="spark-bar" style="height:72%;background:var(--b3)"></div><div class="spark-bar" style="height:72%;background:var(--b3)"></div><div class="spark-bar" style="height:74%;background:var(--b2)"></div><div class="spark-bar" style="height:76%;background:var(--b1)"></div><div class="spark-bar" style="height:77%;background:var(--b1)"></div></div></td>
+            <td class="up" style="font-family:var(--mono);font-size:.72rem;font-weight:600">+8%</td>
+            <td><span class="pill pill-ok">● On Track</span></td>
+          </tr>
+
+          <tr>
+            <td><div class="cow-id-cell"><div class="cow-avatar">#006</div><div><div class="cow-name">Ivy</div><div class="cow-breed">Friesian · 4yr</div></div></div></td>
+            <td class="session-cell"><span class="session-val blue">9.6</span><div class="session-bar" style="background:#1e3a5f;width:60%"></div></td>
+            <td class="session-cell"><span class="session-val" style="color:var(--b3)">7.2</span><div class="session-bar" style="background:#4a90d9;width:45%"></div></td>
+            <td><div class="yield-wrap"><div class="yield-track"><div class="yield-fill" style="width:75%;background:var(--grad-h)"></div></div><span class="yield-num blue">16.8 L</span></div></td>
+            <td><div class="spark"><div class="spark-bar" style="height:66%;background:var(--b4)"></div><div class="spark-bar" style="height:68%;background:var(--b4)"></div><div class="spark-bar" style="height:70%;background:var(--b3)"></div><div class="spark-bar" style="height:72%;background:var(--b3)"></div><div class="spark-bar" style="height:73%;background:var(--b2)"></div><div class="spark-bar" style="height:74%;background:var(--b2)"></div><div class="spark-bar" style="height:75%;background:var(--b1)"></div></div></td>
+            <td class="up" style="font-family:var(--mono);font-size:.72rem;font-weight:600">+5%</td>
+            <td><span class="pill pill-ok">● On Target</span></td>
+          </tr>
+
+          <tr>
+            <td><div class="cow-id-cell"><div class="cow-avatar">#002</div><div><div class="cow-name">Molly</div><div class="cow-breed">Friesian · 4yr</div></div></div></td>
+            <td class="session-cell"><span class="session-val blue">9.4</span><div class="session-bar" style="background:#1e3a5f;width:59%"></div></td>
+            <td class="session-cell"><span class="session-val" style="color:var(--b3)">6.8</span><div class="session-bar" style="background:#4a90d9;width:43%"></div></td>
+            <td><div class="yield-wrap"><div class="yield-track"><div class="yield-fill" style="width:72%;background:var(--grad-h)"></div></div><span class="yield-num blue">16.2 L</span></div></td>
+            <td><div class="spark"><div class="spark-bar" style="height:64%;background:var(--b4)"></div><div class="spark-bar" style="height:66%;background:var(--b4)"></div><div class="spark-bar" style="height:68%;background:var(--b3)"></div><div class="spark-bar" style="height:70%;background:var(--b3)"></div><div class="spark-bar" style="height:71%;background:var(--b2)"></div><div class="spark-bar" style="height:72%;background:var(--b2)"></div><div class="spark-bar" style="height:72%;background:var(--b1)"></div></div></td>
+            <td class="up" style="font-family:var(--mono);font-size:.72rem;font-weight:600">+1%</td>
+            <td><span class="pill pill-ok">● On Target</span></td>
+          </tr>
+
+          <!-- ── MID RANGE ── -->
+          <tr>
+            <td><div class="cow-id-cell"><div class="cow-avatar">#013</div><div><div class="cow-name">Suzie</div><div class="cow-breed">Friesian · 5yr</div></div></div></td>
+            <td class="session-cell"><span class="session-val blue">8.9</span><div class="session-bar" style="background:#1e3a5f;width:56%"></div></td>
+            <td class="session-cell"><span class="session-val" style="color:var(--b3)">6.7</span><div class="session-bar" style="background:#4a90d9;width:42%"></div></td>
+            <td><div class="yield-wrap"><div class="yield-track"><div class="yield-fill" style="width:69%;background:var(--grad-h)"></div></div><span class="yield-num blue">15.6 L</span></div></td>
+            <td><div class="spark"><div class="spark-bar" style="height:64%;background:var(--b4)"></div><div class="spark-bar" style="height:65%;background:var(--b4)"></div><div class="spark-bar" style="height:66%;background:var(--b3)"></div><div class="spark-bar" style="height:67%;background:var(--b3)"></div><div class="spark-bar" style="height:68%;background:var(--b2)"></div><div class="spark-bar" style="height:69%;background:var(--b2)"></div><div class="spark-bar" style="height:69%;background:var(--b1)"></div></div></td>
+            <td class="warn" style="font-family:var(--mono);font-size:.72rem;font-weight:600">−3%</td>
+            <td><span class="pill pill-ok">● Near Target</span></td>
+          </tr>
+
+          <tr>
+            <td><div class="cow-id-cell"><div class="cow-avatar">#004</div><div><div class="cow-name">Lucy</div><div class="cow-breed">Ayrshire · 5yr</div></div></div></td>
+            <td class="session-cell"><span class="session-val blue">8.6</span><div class="session-bar" style="background:#1e3a5f;width:54%"></div></td>
+            <td class="session-cell"><span class="session-val" style="color:var(--b3)">6.5</span><div class="session-bar" style="background:#4a90d9;width:41%"></div></td>
+            <td><div class="yield-wrap"><div class="yield-track"><div class="yield-fill" style="width:67%;background:var(--grad-h)"></div></div><span class="yield-num blue">15.1 L</span></div></td>
+            <td><div class="spark"><div class="spark-bar" style="height:62%;background:var(--b4)"></div><div class="spark-bar" style="height:63%;background:var(--b4)"></div><div class="spark-bar" style="height:64%;background:var(--b3)"></div><div class="spark-bar" style="height:64%;background:var(--b3)"></div><div class="spark-bar" style="height:66%;background:var(--b2)"></div><div class="spark-bar" style="height:66%;background:var(--b2)"></div><div class="spark-bar" style="height:67%;background:var(--b1)"></div></div></td>
+            <td class="warn" style="font-family:var(--mono);font-size:.72rem;font-weight:600">−6%</td>
+            <td><span class="pill pill-ok">● Near Target</span></td>
+          </tr>
+
+          <tr>
+            <td><div class="cow-id-cell"><div class="cow-avatar">#011</div><div><div class="cow-name">Winnie</div><div class="cow-breed">Jersey · 4yr</div></div></div></td>
+            <td class="session-cell"><span class="session-val warn">8.2</span><div class="session-bar" style="background:var(--warn);width:51%"></div></td>
+            <td class="session-cell"><span class="session-val" style="color:#fbbf24">6.4</span><div class="session-bar" style="background:#fcd34d;width:40%"></div></td>
+            <td><div class="yield-wrap"><div class="yield-track"><div class="yield-fill" style="width:65%;background:linear-gradient(90deg,var(--warn),#fcd34d)"></div></div><span class="yield-num warn">14.6 L</span></div></td>
+            <td><div class="spark"><div class="spark-bar" style="height:76%;background:var(--b4)"></div><div class="spark-bar" style="height:72%;background:var(--b4)"></div><div class="spark-bar" style="height:68%;background:#fcd34d"></div><div class="spark-bar" style="height:66%;background:#fcd34d"></div><div class="spark-bar" style="height:64%;background:var(--warn)"></div><div class="spark-bar" style="height:64%;background:var(--warn)"></div><div class="spark-bar" style="height:65%;background:var(--warn)"></div></div></td>
+            <td class="warn" style="font-family:var(--mono);font-size:.72rem;font-weight:600">−9%</td>
+            <td><span class="pill pill-watch">⚠ Monitor</span></td>
+          </tr>
+
+          <tr>
+            <td><div class="cow-id-cell"><div class="cow-avatar">#005</div><div><div class="cow-name">Grace</div><div class="cow-breed">Jersey · 3yr</div></div></div></td>
+            <td class="session-cell"><span class="session-val blue">8.0</span><div class="session-bar" style="background:#1e3a5f;width:50%"></div></td>
+            <td class="session-cell"><span class="session-val" style="color:var(--b3)">6.0</span><div class="session-bar" style="background:#4a90d9;width:38%"></div></td>
+            <td><div class="yield-wrap"><div class="yield-track"><div class="yield-fill" style="width:62%;background:var(--grad-h)"></div></div><span class="yield-num blue">14.0 L</span></div></td>
+            <td><div class="spark"><div class="spark-bar" style="height:56%;background:var(--b4)"></div><div class="spark-bar" style="height:58%;background:var(--b4)"></div><div class="spark-bar" style="height:59%;background:var(--b3)"></div><div class="spark-bar" style="height:60%;background:var(--b3)"></div><div class="spark-bar" style="height:61%;background:var(--b3)"></div><div class="spark-bar" style="height:62%;background:var(--b2)"></div><div class="spark-bar" style="height:62%;background:var(--b1)"></div></div></td>
+            <td class="warn" style="font-family:var(--mono);font-size:.72rem;font-weight:600">−13%</td>
+            <td><span class="pill pill-watch">⚠ Monitor</span></td>
+          </tr>
+
+          <tr>
+            <td><div class="cow-id-cell"><div class="cow-avatar">#015</div><div><div class="cow-name">Nala</div><div class="cow-breed">Ayrshire · 2yr</div></div></div></td>
+            <td class="session-cell"><span class="session-val warn">7.4</span><div class="session-bar" style="background:var(--warn);width:46%"></div></td>
+            <td class="session-cell"><span class="session-val" style="color:#fbbf24">6.1</span><div class="session-bar" style="background:#fcd34d;width:38%"></div></td>
+            <td><div class="yield-wrap"><div class="yield-track"><div class="yield-fill" style="width:60%;background:linear-gradient(90deg,var(--warn),#fcd34d)"></div></div><span class="yield-num warn">13.5 L</span></div></td>
+            <td><div class="spark"><div class="spark-bar" style="height:44%;background:var(--b5)"></div><div class="spark-bar" style="height:48%;background:var(--b5)"></div><div class="spark-bar" style="height:52%;background:var(--b4)"></div><div class="spark-bar" style="height:55%;background:#fcd34d"></div><div class="spark-bar" style="height:57%;background:#fcd34d"></div><div class="spark-bar" style="height:59%;background:var(--warn)"></div><div class="spark-bar" style="height:60%;background:var(--warn)"></div></div></td>
+            <td class="warn" style="font-family:var(--mono);font-size:.72rem;font-weight:600">−16%</td>
+            <td><span class="pill pill-watch">⚠ New Calver</span></td>
+          </tr>
+
+          <!-- ── DECLINING / ALERT ── -->
+          <tr style="background:#fffafa">
+            <td><div class="cow-id-cell"><div class="cow-avatar alert">#014</div><div><div class="cow-name">Honey</div><div class="cow-breed">Friesian · 7yr</div></div></div></td>
+            <td class="session-cell"><span class="session-val down">6.8</span><div class="session-bar" style="background:var(--danger);width:43%"></div></td>
+            <td class="session-cell"><span class="session-val" style="color:#f87171">4.4</span><div class="session-bar" style="background:#fca5a5;width:28%"></div></td>
+            <td><div class="yield-wrap"><div class="yield-track"><div class="yield-fill" style="width:50%;background:linear-gradient(90deg,var(--danger),#fca5a5)"></div></div><span class="yield-num down">11.2 L</span></div></td>
+            <td><div class="spark"><div class="spark-bar" style="height:70%;background:var(--b4)"></div><div class="spark-bar" style="height:62%;background:#fca5a5"></div><div class="spark-bar" style="height:56%;background:#fca5a5"></div><div class="spark-bar" style="height:50%;background:#f87171"></div><div class="spark-bar" style="height:46%;background:#f87171"></div><div class="spark-bar" style="height:44%;background:var(--danger)"></div><div class="spark-bar" style="height:50%;background:var(--danger)"></div></div></td>
+            <td class="down" style="font-family:var(--mono);font-size:.72rem;font-weight:600">−30%</td>
+            <td><span class="pill pill-alert">⚠ Declining</span></td>
+          </tr>
+
+          <tr style="background:#fffafa">
+            <td><div class="cow-id-cell"><div class="cow-avatar alert">#018</div><div><div class="cow-name">Pearl</div><div class="cow-breed">Jersey · 8yr</div></div></div></td>
+            <td class="session-cell"><span class="session-val down">5.1</span><div class="session-bar" style="background:var(--danger);width:32%"></div></td>
+            <td class="session-cell"><span class="session-val" style="color:#f87171">3.9</span><div class="session-bar" style="background:#fca5a5;width:24%"></div></td>
+            <td><div class="yield-wrap"><div class="yield-track"><div class="yield-fill" style="width:40%;background:linear-gradient(90deg,var(--danger),#fca5a5)"></div></div><span class="yield-num down">9.0 L</span></div></td>
+            <td><div class="spark"><div class="spark-bar" style="height:72%;background:var(--b4)"></div><div class="spark-bar" style="height:60%;background:#fca5a5"></div><div class="spark-bar" style="height:50%;background:#fca5a5"></div><div class="spark-bar" style="height:44%;background:#f87171"></div><div class="spark-bar" style="height:40%;background:#f87171"></div><div class="spark-bar" style="height:36%;background:var(--danger)"></div><div class="spark-bar" style="height:40%;background:var(--danger)"></div></div></td>
+            <td class="down" style="font-family:var(--mono);font-size:.72rem;font-weight:600">−44%</td>
+            <td><span class="pill pill-alert">⚠ Review Now</span></td>
+          </tr>
+
+          <!-- ── DRY COWS ── -->
+          <tr style="opacity:.4">
+            <td><div class="cow-id-cell"><div class="cow-avatar dry">#010</div><div><div class="cow-name" style="color:var(--muted)">Ginger</div><div class="cow-breed">Friesian · 3yr</div></div></div></td>
+            <td class="session-cell"><span class="session-val" style="color:var(--muted)">—</span></td>
+            <td class="session-cell"><span class="session-val" style="color:var(--muted)">—</span></td>
+            <td><div class="yield-wrap"><div class="yield-track"><div class="yield-fill" style="width:0%"></div></div><span class="yield-num" style="color:var(--muted)">0 L</span></div></td>
+            <td><div class="spark"><div class="spark-bar" style="height:5%;background:var(--border)"></div><div class="spark-bar" style="height:5%;background:var(--border)"></div><div class="spark-bar" style="height:5%;background:var(--border)"></div><div class="spark-bar" style="height:5%;background:var(--border)"></div><div class="spark-bar" style="height:5%;background:var(--border)"></div><div class="spark-bar" style="height:5%;background:var(--border)"></div><div class="spark-bar" style="height:5%;background:var(--border)"></div></div></td>
+            <td style="color:var(--muted);font-family:var(--mono);font-size:.72rem">—</td>
+            <td><span class="pill pill-dry">Dry · 14d left</span></td>
+          </tr>
+
+          <tr style="opacity:.4">
+            <td><div class="cow-id-cell"><div class="cow-avatar dry">#017</div><div><div class="cow-name" style="color:var(--muted)">Sasha</div><div class="cow-breed">Ayrshire · 4yr</div></div></div></td>
+            <td class="session-cell"><span class="session-val" style="color:var(--muted)">—</span></td>
+            <td class="session-cell"><span class="session-val" style="color:var(--muted)">—</span></td>
+            <td><div class="yield-wrap"><div class="yield-track"><div class="yield-fill" style="width:0%"></div></div><span class="yield-num" style="color:var(--muted)">0 L</span></div></td>
+            <td><div class="spark"><div class="spark-bar" style="height:5%;background:var(--border)"></div><div class="spark-bar" style="height:5%;background:var(--border)"></div><div class="spark-bar" style="height:5%;background:var(--border)"></div><div class="spark-bar" style="height:5%;background:var(--border)"></div><div class="spark-bar" style="height:5%;background:var(--border)"></div><div class="spark-bar" style="height:5%;background:var(--border)"></div><div class="spark-bar" style="height:5%;background:var(--border)"></div></div></td>
+            <td style="color:var(--muted);font-family:var(--mono);font-size:.72rem">—</td>
+            <td><span class="pill pill-dry">Dry · 8d left</span></td>
+          </tr>
+
+          <tr style="opacity:.4">
+            <td><div class="cow-id-cell"><div class="cow-avatar dry">#020</div><div><div class="cow-name" style="color:var(--muted)">Mia</div><div class="cow-breed">Jersey · 3yr</div></div></div></td>
+            <td class="session-cell"><span class="session-val" style="color:var(--muted)">—</span></td>
+            <td class="session-cell"><span class="session-val" style="color:var(--muted)">—</span></td>
+            <td><div class="yield-wrap"><div class="yield-track"><div class="yield-fill" style="width:0%"></div></div><span class="yield-num" style="color:var(--muted)">0 L</span></div></td>
+            <td><div class="spark"><div class="spark-bar" style="height:5%;background:var(--border)"></div><div class="spark-bar" style="height:5%;background:var(--border)"></div><div class="spark-bar" style="height:5%;background:var(--border)"></div><div class="spark-bar" style="height:5%;background:var(--border)"></div><div class="spark-bar" style="height:5%;background:var(--border)"></div><div class="spark-bar" style="height:5%;background:var(--border)"></div><div class="spark-bar" style="height:5%;background:var(--border)"></div></div></td>
+            <td style="color:var(--muted);font-family:var(--mono);font-size:.72rem">—</td>
+            <td><span class="pill pill-dry">Dry · 21d left</span></td>
+          </tr>
+
+          <tr style="opacity:.4">
+            <td><div class="cow-id-cell"><div class="cow-avatar dry">#022</div><div><div class="cow-name" style="color:var(--muted)">Flora</div><div class="cow-breed">Friesian · 5yr</div></div></div></td>
+            <td class="session-cell"><span class="session-val" style="color:var(--muted)">—</span></td>
+            <td class="session-cell"><span class="session-val" style="color:var(--muted)">—</span></td>
+            <td><div class="yield-wrap"><div class="yield-track"><div class="yield-fill" style="width:0%"></div></div><span class="yield-num" style="color:var(--muted)">0 L</span></div></td>
+            <td><div class="spark"><div class="spark-bar" style="height:5%;background:var(--border)"></div><div class="spark-bar" style="height:5%;background:var(--border)"></div><div class="spark-bar" style="height:5%;background:var(--border)"></div><div class="spark-bar" style="height:5%;background:var(--border)"></div><div class="spark-bar" style="height:5%;background:var(--border)"></div><div class="spark-bar" style="height:5%;background:var(--border)"></div><div class="spark-bar" style="height:5%;background:var(--border)"></div></div></td>
+            <td style="color:var(--muted);font-family:var(--mono);font-size:.72rem">—</td>
+            <td><span class="pill pill-dry">Dry · 5d left</span></td>
+          </tr>
+
+        </tbody>
+      </table>
+
+      <!-- TABLE FOOTER SUMMARY -->
+      <div class="table-footer">
+        <div class="tf-item">Active cows producing: <strong>18</strong></div>
+        <div class="tf-item">Total milk produced today: <strong style="color:var(--b1)">248 L</strong></div>
+        <div class="tf-item">Herd average / cow: <strong style="color:var(--warn)">13.8 L</strong></div>
+        <div class="tf-item">Target average: <strong style="color:var(--success)">16.0 L</strong></div>
+        <div class="tf-item">Best cow: <strong style="color:var(--b1)">#001 Daisy — 22.4 L</strong></div>
+        <div class="tf-item">Needs review: <strong style="color:var(--danger)">#014 Honey · #018 Pearl</strong></div>
+      </div>
+    </div>
+
+  </div>
+</main>
+</body>
+</html>
