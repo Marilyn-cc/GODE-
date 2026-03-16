@@ -8,9 +8,6 @@ def home(request):
     
 def cows(request):
     return render(request, 'index/cows.html')
-    
-def home(request):
-    return render(request, 'index/cow.html')  
 
 def production(request):
     return render(request, 'index/production.html')
