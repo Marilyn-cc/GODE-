@@ -6,4 +6,5 @@ def home(request):
     return render(request, 'index/dashboard.html')
 
 
-    
+def home(request):
+    return render(request, 'index/cow.html')   
