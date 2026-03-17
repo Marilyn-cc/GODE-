@@ -18,6 +18,24 @@
 html{font-size:13.5px}
 body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;display:flex}
 
+/* SIDEBAR */
+aside { width: 216px; min-height: 100vh; background: var(--b1); display: flex; flex-direction: column; position: fixed; left:0;top:0;bottom:0; z-index:100; }
+.logo { padding: 26px 20px 18px; border-bottom: 1px solid rgba(255,255,255,.12); }
+.logo-mark { font-weight: 800; font-size: 1.35rem; letter-spacing: -.5px; color: #fff; }
+.logo-sub { font-family: var(--mono); font-size: .58rem; color: rgba(255,255,255,.5); letter-spacing: .1em; margin-top: 3px; }
+nav { padding: 14px 10px; flex: 1; }
+.nav-label { font-family: var(--mono); font-size: .57rem; color: rgba(255,255,255,.4); letter-spacing: .12em; text-transform: uppercase; padding: 12px 10px 5px; }
+.nav-item { display: flex; align-items: center; gap: 9px; padding: 8px 12px; border-radius: 7px; cursor: pointer; color: rgba(255,255,255,.65); font-size: .8rem; font-weight: 600; transition: all .15s; margin-bottom: 1px; }
+.nav-item:hover { background: rgba(255,255,255,.1); color: #fff; }
+.nav-item.active { background: rgba(255,255,255,.18); color: #fff; }
+.nav-icon { width: 15px; height: 15px; flex-shrink: 0; }
+.badge { margin-left: auto; background: #ef4444; color: #fff; font-family: var(--mono); font-size: .52rem; padding: 1px 5px; border-radius: 10px; }
+.sidebar-footer { padding: 14px 16px; border-top: 1px solid rgba(255,255,255,.12); }
+.user-chip { display: flex; align-items: center; gap: 10px; }
+.avatar { width: 32px; height: 32px; background: rgba(255,255,255,.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: .68rem; color: #fff; border: 1.5px solid rgba(255,255,255,.3); }
+.user-info .name { font-size: .78rem; font-weight: 700; color: #fff; }
+.user-info .role { font-family: var(--mono); font-size: .57rem; color: rgba(255,255,255,.5); }
+
 /* MAIN */
 main{margin-left:216px;flex:1;display:flex;flex-direction:column}
 header{padding:16px 30px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface);position:sticky;top:0;z-index:10;box-shadow:0 1px 4px rgba(30,58,95,.06)}
