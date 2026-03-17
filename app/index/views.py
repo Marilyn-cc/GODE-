@@ -71,3 +71,12 @@ def forecasting(request):
 
 def petroshop(request):
     return render(request, 'index/petroshop.html')
+
+def value_addition(request):
+    return render(request, 'index/value_addition.html')
+
+def feed_inputs(request):
+    return render(request, 'index/feed_inputs.html')
+
+def mpesa_ledger(request):
+    return render(request, 'index/mpesa_ledger.html')
