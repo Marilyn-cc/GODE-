@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Forecasting · GODE Agri-Business</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:      #f0f4fb;
+    --surface: #ffffff;
+    --surface2:#e8eef8;
+    --border:  #d6e0f0;
+    --b1:      #1e3a5f;
+    --b2:      #2563a8;
+    --b3:      #4a90d9;
+    --b4:      #7eb8f7;
+    --b5:      #b3d4f7;
+    --b6:      #e8f1fc;
+    --success: #2d6a2f;
+    --logo-green: #336633;
+    --warn:    #d97706;
+    --danger:  #dc2626;
+    --text:    #0f172a;
+    --text2:   #64748b;
+    --muted:   #94a3b8;
+    --sans:    'Plus Jakarta Sans', sans-serif;
+    --mono:    'IBM Plex Mono', monospace;
+    --grad:    linear-gradient(180deg, #1a56db 0%, #60a5fa 60%, #bfdbfe 100%);
+    --grad-h:  linear-gradient(90deg, #1a56db 0%, #60a5fa 100%);
+  }
+
+  html { font-size: 13.5px; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; display: flex; }
+
+  /* SIDEBAR */
+  aside { width: 216px; min-height: 100vh; background: var(--b1); display: flex; flex-direction: column; position: fixed; left:0;top:0;bottom:0; z-index:100; }
+  .logo { padding: 26px 20px 18px; border-bottom: 1px solid rgba(255,255,255,.12); }
+  .logo-mark { font-weight: 800; font-size: 1.35rem; letter-spacing: -.5px; color: #fff; }
+  .logo-sub { font-family: var(--mono); font-size: .58rem; color: rgba(255,255,255,.5); letter-spacing: .1em; margin-top: 3px; }
+  nav { padding: 14px 10px; flex: 1; }
+  .nav-label { font-family: var(--mono); font-size: .57rem; color: rgba(255,255,255,.4); letter-spacing: .12em; text-transform: uppercase; padding: 12px 10px 5px; }
+  .nav-item { display: flex; align-items: center; gap: 9px; padding: 8px 12px; border-radius: 7px; cursor: pointer; color: rgba(255,255,255,.65); font-size: .8rem; font-weight: 600; transition: all .15s; margin-bottom: 1px; }
+  .nav-item:hover { background: rgba(255,255,255,.1); color: #fff; }
+  .nav-item.active { background: rgba(255,255,255,.18); color: #fff; }
+  .nav-icon { width: 15px; height: 15px; flex-shrink: 0; }
+  .badge { margin-left: auto; background: #ef4444; color: #fff; font-family: var(--mono); font-size: .52rem; padding: 1px 5px; border-radius: 10px; }
+  .sidebar-footer { padding: 14px 16px; border-top: 1px solid rgba(255,255,255,.12); }
+  .user-chip { display: flex; align-items: center; gap: 10px; }
+  .avatar { width: 32px; height: 32px; background: rgba(255,255,255,.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: .68rem; color: #fff; border: 1.5px solid rgba(255,255,255,.3); }
+  .user-info .name { font-size: .78rem; font-weight: 700; color: #fff; }
+  .user-info .role { font-family: var(--mono); font-size: .57rem; color: rgba(255,255,255,.5); }
+
+  /* MAIN */
+  main { margin-left: 216px; flex: 1; display: flex; flex-direction: column; }
+  header { padding: 18px 30px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--surface); position: sticky; top: 0; z-index: 10; box-shadow: 0 1px 4px rgba(26,86,219,.06); }
+  .page-title { font-size: 1.05rem; font-weight: 800; }
+  .page-date { font-family: var(--mono); font-size: .62rem; color: var(--text2); margin-top: 2px; }
+  .header-actions { display: flex; align-items: center; gap: 10px; }
+  .btn { padding: 7px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-family: var(--sans); font-size: .76rem; font-weight: 600; cursor: pointer; }
+  .btn-primary { background: var(--b1); color: #fff; border-color: var(--b1); }
+
+  /* CONTENT */
+  .content { padding: 26px 30px; flex: 1; }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+  /* KPI */
+  .kpi-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 12px; margin-bottom: 22px; }
+  .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 16px; transition: box-shadow .2s; animation: fadeUp .4s ease both; }
+  .kpi:hover { box-shadow: 0 4px 16px rgba(26,86,219,.1); }
+  .kpi-accent { border-top: 3px solid var(--b1); }
+  .kpi-warn   { border-top: 3px solid var(--warn); }
+  .kpi-label { font-family: var(--mono); font-size: .58rem; color: var(--text2); letter-spacing: .07em; text-transform: uppercase; }
+  .kpi-value { font-size: 1.55rem; font-weight: 800; margin: 6px 0 4px; line-height: 1; }
+  .kpi-change { font-family: var(--mono); font-size: .62rem; display: flex; align-items: center; gap: 4px; }
+  .up{color:var(--success)} .warn{color:var(--warn)}
+
+  /* GRID */
+  .row { display: grid; gap: 14px; margin-bottom: 14px; }
+  .row-3-2 { grid-template-columns: 3fr 2fr; }
+  .row-2-3 { grid-template-columns: 2fr 3fr; }
+  .row-3   { grid-template-columns: 1fr 1fr 1fr; }
+  
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; transition: box-shadow .2s; animation: fadeUp .4s ease both; }
+  .card:hover { box-shadow: 0 4px 16px rgba(26,86,219,.08); }
+  .card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; }
+  .card-title { font-weight: 800; font-size: .86rem; }
+  .card-sub { font-family: var(--mono); font-size: .58rem; color: var(--text2); margin-top: 2px; }
+  
+  .tag { font-family: var(--mono); font-size: .56rem; padding: 3px 8px; border-radius: 5px; border: 1px solid var(--border); color: var(--text2); background: var(--bg); white-space: nowrap; }
+  .tag-green { border-color: #86efac; color: var(--success); background: #f0fdf4; }
+  .tag-warn  { border-color: #fcd34d; color: var(--warn); background: #fffbeb; }
+  .tag-blue  { border-color: var(--b4); color: var(--b1); background: var(--b6); }
+
+  /* CHARTS */
+  .chart-wrap { position: relative; height: 120px; margin-top: 10px; }
+  .chart-wrap svg { width: 100%; height: 100%; }
+
+  /* FEED REUSE */
+  .anomaly-item { display: flex; gap: 11px; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
+  .anomaly-item:last-child { border-bottom: none; }
+  .anom-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: .78rem; flex-shrink: 0; margin-top: 1px; }
+  .anom-info-bg { background: var(--b6); }
+  .anom-title { font-size: .78rem; font-weight: 700; }
+  .anom-desc { font-family: var(--mono); font-size: .6rem; color: var(--text2); margin-top: 2px; line-height: 1.45; }
+
+  /* BARS */
+  .milk-flow { display: flex; gap: 10px; align-items: flex-end; height: 100px; margin-top: 15px; }
+  .bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+  .bar-track { width: 100%; background: var(--b6); border-radius: 5px; flex: 1; display: flex; align-items: flex-end; overflow: hidden; }
+  .bar-fill { width: 100%; border-radius: 5px; background: var(--grad-h); }
+  .bar-label { font-family: var(--mono); font-size: .54rem; color: var(--text2); }
+  .bar-val { font-family: var(--mono); font-size: .54rem; color: var(--b1); font-weight: 500; }
+
+  /* TABLE */
+  .yield-table { width: 100%; border-collapse: collapse; }
+  .yield-table th { font-family: var(--mono); font-size: .57rem; color: var(--text2); letter-spacing: .05em; text-transform: uppercase; text-align: left; padding: 0 0 9px; border-bottom: 1px solid var(--border); }
+  .yield-table td { padding: 10px 0; font-size: .77rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .yield-table tr:last-child td { border-bottom: none; }
+
+  /* SENSITIVITY */
+  .sensitivity-row { padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .sensitivity-row:last-child { border-bottom: none; }
+  .s-label { font-size: .78rem; font-weight: 600; }
+  .s-val { font-family: var(--mono); font-size: .7rem; color: var(--text2); margin-top: 2px; }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-thumb { background: var(--b5); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+{% include 'index/sidebar.html' %}
+
+<main>
+  <header>
+    <div>
+      <div class="page-title">Forecasting</div>
+      <div class="page-date">Predictions · Planning · Insights</div>
+    </div>
+    <div class="header-actions">
+      <button class="btn">Export Forecast</button>
+      <button class="btn btn-primary">+ Run ML Model</button>
+    </div>
+  </header>
+
+  <div class="content">
+    <!-- SECTION 1 — KPI CARDS -->
+    <div class="kpi-grid">
+      <div class="kpi kpi-accent">
+        <div class="kpi-label">Predicted Milk Yield (Next 7 Days)</div>
+        <div class="kpi-value" style="color:var(--b1)">1,820 L</div>
+        <div class="kpi-change up">↑ 6% vs last week</div>
+      </div>
+      <div class="kpi kpi-accent">
+        <div class="kpi-label">Projected Revenue</div>
+        <div class="kpi-value" style="color:var(--b1)">KSh 96,500</div>
+        <div class="kpi-change">Based on current trends</div>
+      </div>
+      <div class="kpi kpi-accent">
+        <div class="kpi-label">Feed Requirement Forecast</div>
+        <div class="kpi-value" style="color:var(--b1)">520 kg</div>
+        <div class="kpi-change">Next 14 days</div>
+      </div>
+      <div class="kpi kpi-warn">
+        <div class="kpi-label">Risk Alerts</div>
+        <div class="kpi-value" style="color:var(--warn)">3</div>
+        <div class="kpi-change"><span class="tag tag-warn">Warning</span></div>
+      </div>
+      <div class="kpi kpi-accent">
+        <div class="kpi-label">Confidence Score</div>
+        <div class="kpi-value" style="color:var(--b1)">87%</div>
+        <div class="kpi-change">Model accuracy</div>
+      </div>
+    </div>
+
+    <!-- SECTION 2 — FORECAST CHART + INSIGHTS -->
+    <div class="row row-3-2">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Milk Yield Forecast</div>
+            <div class="card-sub">Past 7 days (solid) · Next 7 days (dashed)</div>
+          </div>
+          <span class="tag tag-blue">ML Model v2.4</span>
+        </div>
+        <div class="chart-wrap">
+          <svg viewBox="0 0 400 120" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#1a56db" stop-opacity=".15"/>
+                <stop offset="100%" stop-color="#1a56db" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <!-- Grid Lines -->
+            <line x1="0" y1="30" x2="400" y2="30" stroke="#e2e8f0" stroke-width="1"/>
+            <line x1="0" y1="60" x2="400" y2="60" stroke="#e2e8f0" stroke-width="1"/>
+            <line x1="0" y1="90" x2="400" y2="90" stroke="#e2e8f0" stroke-width="1"/>
+            
+            <!-- Area Fill -->
+            <path d="M0,80 L28,70 L56,75 L84,65 L112,55 L140,68 L168,62 C196,55 224,50 252,45 C280,48 308,40 336,35 L364,25 L400,20 L400,120 L0,120 Z" fill="url(#areaGrad)"/>
+            
+            <!-- Past 7 Days (Solid Line) -->
+            <path d="M0,80 L28,70 L56,75 L84,65 L112,55 L140,68 L168,62" fill="none" stroke="#1a56db" stroke-width="3" stroke-linecap="round"/>
+            
+            <!-- Future 7 Days (Dashed Line) -->
+            <path d="M168,62 C196,55 224,50 252,45 C280,48 308,40 336,35 L364,25 L400,20" fill="none" stroke="#60a5fa" stroke-width="3" stroke-dasharray="6,4" stroke-linecap="round"/>
+            
+            <!-- Current Day Marker -->
+            <circle cx="168" cy="62" r="4" fill="#1a56db"/>
+            <text x="172" y="52" fill="#1a56db" font-size="7" font-family="IBM Plex Mono">TODAY</text>
+          </svg>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-top:10px; font-family:var(--mono); font-size:.6rem; color:var(--text2)">
+          <span>7 Days Ago</span>
+          <span>Today</span>
+          <span>7 Days Ahead</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Forecast Insights</div>
+            <div class="card-sub">AI analysis of projected trends</div>
+          </div>
+        </div>
+        <div class="anomaly-item">
+          <div class="anom-icon anom-info-bg" style="color:var(--b1)">📈</div>
+          <div>
+            <div class="anom-title">Rising Production Expected</div>
+            <div class="anom-desc">Milk production expected to rise due to improved feed intake in Parlour A.</div>
+          </div>
+        </div>
+        <div class="anomaly-item">
+          <div class="anom-icon anom-info-bg" style="color:var(--b1)">🌡</div>
+          <div>
+            <div class="anom-title">Yield Efficiency Boost</div>
+            <div class="anom-desc">Temperature drop may increase yield efficiency across the herd.</div>
+          </div>
+        </div>
+        <div class="anomaly-item">
+          <div class="anom-icon anom-info-bg" style="color:var(--b1)">🌾</div>
+          <div>
+            <div class="anom-title">Feed Stock Status</div>
+            <div class="anom-desc">Feed stock sufficient for next 12 days at current consumption rate.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 3 — FEED & RESOURCE PLANNING -->
+    <div class="row row-2-3">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Feed Cost Projection</div>
+            <div class="card-sub">Daily estimated spend (KSh)</div>
+          </div>
+        </div>
+        <div class="milk-flow">
+          <div class="bar-wrap">
+            <div class="bar-val">4,500</div>
+            <div class="bar-track"><div class="bar-fill" style="height:70%"></div></div>
+            <div class="bar-label">MON</div>
+          </div>
+          <div class="bar-wrap">
+            <div class="bar-val">4,700</div>
+            <div class="bar-track"><div class="bar-fill" style="height:75%"></div></div>
+            <div class="bar-label">TUE</div>
+          </div>
+          <div class="bar-wrap">
+            <div class="bar-val">4,800</div>
+            <div class="bar-track"><div class="bar-fill" style="height:80%"></div></div>
+            <div class="bar-label">WED</div>
+          </div>
+          <div class="bar-wrap">
+            <div class="bar-val">4,650</div>
+            <div class="bar-track"><div class="bar-fill" style="height:73%"></div></div>
+            <div class="bar-label">THU</div>
+          </div>
+          <div class="bar-wrap">
+            <div class="bar-val">4,900</div>
+            <div class="bar-track"><div class="bar-fill" style="height:85%"></div></div>
+            <div class="bar-label">FRI</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Resource Planning</div>
+            <div class="card-sub">Availability vs. Forecasted Demand</div>
+          </div>
+        </div>
+        <table class="yield-table">
+          <thead>
+            <tr><th>Resource</th><th>Required</th><th>Available</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Feed</strong></td>
+              <td>520 kg</td>
+              <td>600 kg</td>
+              <td><span class="tag tag-green">OK</span></td>
+            </tr>
+            <tr>
+              <td><strong>Water</strong></td>
+              <td>3,000 L</td>
+              <td>2,200 L</td>
+              <td><span class="tag tag-warn">Warning</span></td>
+            </tr>
+            <tr>
+              <td><strong>Labor</strong></td>
+              <td>4 workers</td>
+              <td>4</td>
+              <td><span class="tag tag-green">OK</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SECTION 4 — RISK & SCENARIOS -->
+    <div class="row row-3">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Risk Scenarios</div>
+            <div class="card-sub">Probability of disruption</div>
+          </div>
+        </div>
+        <div class="sensitivity-row">
+          <div class="s-label">Heat Stress</div>
+          <div class="s-val">Low Probability · Impact: -5% Yield</div>
+        </div>
+        <div class="sensitivity-row">
+          <div class="s-label">Feed Shortage</div>
+          <div class="s-val">Minimal Risk · Impact: -12% Yield</div>
+        </div>
+        <div class="sensitivity-row">
+          <div class="s-label">Disease Risk</div>
+          <div class="s-val">Controlled · Impact: High</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Yield Sensitivity</div>
+            <div class="card-sub">Correlation analysis</div>
+          </div>
+        </div>
+        <div class="sensitivity-row">
+          <div class="s-label">Feed Impact</div>
+          <div class="s-val">Feed ↓ 10% → Yield ↓ 6%</div>
+        </div>
+        <div class="sensitivity-row">
+          <div class="s-label">Temperature Impact</div>
+          <div class="s-val">Temperature ↑ → Yield ↓</div>
+        </div>
+        <div class="sensitivity-row">
+          <div class="s-label">Water Impact</div>
+          <div class="s-val">Water ↓ 15% → Yield ↓ 9%</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Revenue Breakdown</div>
+            <div class="card-sub">Forecasted share by product</div>
+          </div>
+        </div>
+        <div class="anomaly-item">
+          <div>
+            <div class="anom-title">Milk</div>
+            <div class="anom-desc">KSh 70,000 projected</div>
+          </div>
+        </div>
+        <div class="anomaly-item">
+          <div>
+            <div class="anom-title">Yoghurt</div>
+            <div class="anom-desc">KSh 20,000 projected</div>
+          </div>
+        </div>
+        <div class="anomaly-item">
+          <div>
+            <div class="anom-title">Mala</div>
+            <div class="anom-desc">KSh 6,000 projected</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+</body>
+</html>

@@ -40,8 +40,9 @@
       Cow ROI
     </div>
   
-    <!-- Forecasting (static) -->
-    <div class="nav-item">
+    <!-- Forecasting -->
+    <div class="nav-item {% if request.resolver_match.url_name == 'forecasting' %}active{% endif %}" 
+         onclick="window.location.href='{% url 'forecasting' %}'" style="cursor:pointer;">
       <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
         <path d="M2 12l4-5 3 3 5-7" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
@@ -78,8 +79,9 @@
       M-Pesa Ledger
     </div>
   
-    <!-- Petro Shop (static) -->
-    <div class="nav-item">
+    <!-- Petro Shop -->
+    <div class="nav-item {% if request.resolver_match.url_name == 'petroshop' %}active{% endif %}" 
+         onclick="window.location.href='{% url 'petroshop' %}'" style="cursor:pointer;">
       <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
         <path d="M13 5c0 3.866-5 9-5 9S3 8.866 3 5a5 5 0 1110 0z" stroke="white" stroke-width="1.4"/>
         <circle cx="8" cy="5" r="1.5" stroke="white" stroke-width="1.2"/>
@@ -88,7 +90,8 @@
     </div>
   
     <!-- Wholesale (static) -->
-    <div class="nav-item">
+    <div class="nav-item {% if request.resolver_match.url_name == 'wholesale' %}active{% endif %}" 
+         onclick="window.location.href='{% url 'wholesale' %}'" style="cursor:pointer;">
       <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
         <path d="M2 13V5l6-3 6 3v8" stroke="white" stroke-width="1.4" stroke-linejoin="round"/>
         <rect x="6" y="9" width="4" height="4" rx=".5" stroke="white" stroke-width="1.2"/>

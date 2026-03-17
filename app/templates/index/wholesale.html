@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Wholesale Operations · GODE Agri-Business</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:      #f0f4fb;
+    --surface: #ffffff;
+    --surface2:#e8eef8;
+    --border:  #d6e0f0;
+    --b1:      #1e3a5f;
+    --b2:      #2563a8;
+    --b3:      #4a90d9;
+    --b4:      #7eb8f7;
+    --b5:      #b3d4f7;
+    --b6:      #e8f1fc;
+    --success: #2d6a2f;
+    --logo-green: #336633;
+    --warn:    #d97706;
+    --danger:  #dc2626;
+    --text:    #0f172a;
+    --text2:   #64748b;
+    --muted:   #94a3b8;
+    --sans:    'Plus Jakarta Sans', sans-serif;
+    --mono:    'IBM Plex Mono', monospace;
+    --grad:    linear-gradient(180deg, #1a56db 0%, #60a5fa 60%, #bfdbfe 100%);
+    --grad-h:  linear-gradient(90deg, #1a56db 0%, #60a5fa 100%);
+  }
+
+  html { font-size: 13.5px; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; display: flex; }
+
+  /* SIDEBAR */
+  aside { width: 216px; min-height: 100vh; background: var(--b1); display: flex; flex-direction: column; position: fixed; left:0;top:0;bottom:0; z-index:100; }
+  .logo { padding: 26px 20px 18px; border-bottom: 1px solid rgba(255,255,255,.12); }
+  .logo-mark { font-weight: 800; font-size: 1.35rem; letter-spacing: -.5px; color: #fff; }
+  .logo-sub { font-family: var(--mono); font-size: .58rem; color: rgba(255,255,255,.5); letter-spacing: .1em; margin-top: 3px; }
+  nav { padding: 14px 10px; flex: 1; }
+  .nav-label { font-family: var(--mono); font-size: .57rem; color: rgba(255,255,255,.4); letter-spacing: .12em; text-transform: uppercase; padding: 12px 10px 5px; }
+  .nav-item { display: flex; align-items: center; gap: 9px; padding: 8px 12px; border-radius: 7px; cursor: pointer; color: rgba(255,255,255,.65); font-size: .8rem; font-weight: 600; transition: all .15s; margin-bottom: 1px; }
+  .nav-item:hover { background: rgba(255,255,255,.1); color: #fff; }
+  .nav-item.active { background: rgba(255,255,255,.18); color: #fff; }
+  .nav-icon { width: 15px; height: 15px; flex-shrink: 0; }
+  .badge { margin-left: auto; background: #ef4444; color: #fff; font-family: var(--mono); font-size: .52rem; padding: 1px 5px; border-radius: 10px; }
+  .sidebar-footer { padding: 14px 16px; border-top: 1px solid rgba(255,255,255,.12); }
+  .user-chip { display: flex; align-items: center; gap: 10px; }
+  .avatar { width: 32px; height: 32px; background: rgba(255,255,255,.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: .68rem; color: #fff; border: 1.5px solid rgba(255,255,255,.3); }
+  .user-info .name { font-size: .78rem; font-weight: 700; color: #fff; }
+  .user-info .role { font-family: var(--mono); font-size: .57rem; color: rgba(255,255,255,.5); }
+
+  /* MAIN */
+  main { margin-left: 216px; flex: 1; display: flex; flex-direction: column; }
+  header { padding: 18px 30px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--surface); position: sticky; top: 0; z-index: 10; box-shadow: 0 1px 4px rgba(26,86,219,.06); }
+  .page-title { font-size: 1.05rem; font-weight: 800; }
+  .page-date { font-family: var(--mono); font-size: .62rem; color: var(--text2); margin-top: 2px; }
+  .header-actions { display: flex; align-items: center; gap: 10px; }
+  .btn { padding: 7px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-family: var(--sans); font-size: .76rem; font-weight: 600; cursor: pointer; }
+  .btn-primary { background: var(--b1); color: #fff; border-color: var(--b1); }
+
+  /* CONTENT */
+  .content { padding: 26px 30px; flex: 1; }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+  /* KPI */
+  .kpi-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 12px; margin-bottom: 22px; }
+  .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 16px; transition: box-shadow .2s; animation: fadeUp .4s ease both; }
+  .kpi:hover { box-shadow: 0 4px 16px rgba(26,86,219,.1); }
+  .kpi-accent { border-top: 3px solid var(--b1); }
+  .kpi-warn   { border-top: 3px solid var(--warn); }
+  .kpi-label { font-family: var(--mono); font-size: .58rem; color: var(--text2); letter-spacing: .07em; text-transform: uppercase; }
+  .kpi-value { font-size: 1.55rem; font-weight: 800; margin: 6px 0 4px; line-height: 1; }
+  .kpi-change { font-family: var(--mono); font-size: .62rem; display: flex; align-items: center; gap: 4px; }
+  .up{color:var(--success)} .warn{color:var(--warn)}
+
+  /* GRID */
+  .row { display: grid; gap: 14px; margin-bottom: 14px; }
+  .row-3-2 { grid-template-columns: 3fr 2fr; }
+  .row-2-3 { grid-template-columns: 2fr 3fr; }
+  .row-3   { grid-template-columns: 1fr 1fr 1fr; }
+  
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; transition: box-shadow .2s; animation: fadeUp .4s ease both; }
+  .card:hover { box-shadow: 0 4px 16px rgba(26,86,219,.08); }
+  .card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; }
+  .card-title { font-weight: 800; font-size: .86rem; }
+  .card-sub { font-family: var(--mono); font-size: .58rem; color: var(--text2); margin-top: 2px; }
+  
+  .tag { font-family: var(--mono); font-size: .56rem; padding: 3px 8px; border-radius: 5px; border: 1px solid var(--border); color: var(--text2); background: var(--bg); white-space: nowrap; }
+  .tag-green { border-color: #86efac; color: var(--success); background: #f0fdf4; }
+  .tag-warn  { border-color: #fcd34d; color: var(--warn); background: #fffbeb; }
+  .tag-blue  { border-color: var(--b4); color: var(--b1); background: var(--b6); }
+
+  /* MILK FLOW (BARS) */
+  .milk-flow { display: flex; gap: 8px; align-items: flex-end; height: 110px; }
+  .bar-wrap  { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+  .bar-track { width: 100%; background: var(--b6); border-radius: 5px; flex: 1; display: flex; align-items: flex-end; overflow: hidden; }
+  .bar-fill  { width: 100%; border-radius: 5px; background: var(--grad); }
+  .bar-label { font-family: var(--mono); font-size: .54rem; color: var(--text2); }
+  .bar-val   { font-family: var(--mono); font-size: .54rem; color: var(--b1); font-weight: 500; }
+  .legend-row { display: flex; gap: 16px; margin-top: 14px; }
+  .legend-row span { font-family: var(--mono); font-size: .57rem; }
+
+  /* ANOMALY (FEED) */
+  .anomaly-item { display: flex; gap: 11px; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
+  .anomaly-item:last-child { border-bottom: none; }
+  .anom-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: .78rem; flex-shrink: 0; margin-top: 1px; }
+  .anom-critical { background: #fef2f2; }
+  .anom-warn-bg  { background: #fffbeb; }
+  .anom-info-bg  { background: var(--b6); }
+  .anom-title { font-size: .78rem; font-weight: 700; }
+  .anom-desc  { font-family: var(--mono); font-size: .6rem; color: var(--text2); margin-top: 2px; line-height: 1.45; }
+  .anom-time  { font-family: var(--mono); font-size: .56rem; color: var(--muted); margin-top: 4px; }
+
+  /* PRODUCT ROWS (PROGRESS BARS) */
+  .product-row { display: flex; align-items: center; gap: 12px; margin-bottom: 11px; }
+  .product-row:last-child { margin-bottom: 0; }
+  .product-name { font-size: .77rem; font-weight: 700; width: 136px; flex-shrink: 0; line-height: 1.2; }
+  .progress-track { flex: 1; height: 7px; background: var(--b6); border-radius: 4px; overflow: hidden; }
+  .progress-fill  { height: 100%; border-radius: 4px; background: var(--grad-h); }
+  .product-margin { font-family: var(--mono); font-size: .7rem; font-weight: 500; text-align: right; width: 38px; flex-shrink: 0; }
+  .fill-warn { background: linear-gradient(90deg, var(--warn), #fcd34d); }
+
+  /* TABLE */
+  .yield-table { width: 100%; border-collapse: collapse; }
+  .yield-table th { font-family: var(--mono); font-size: .57rem; color: var(--text2); letter-spacing: .05em; text-transform: uppercase; text-align: left; padding: 0 0 9px; border-bottom: 1px solid var(--border); }
+  .yield-table td { padding: 10px 0; font-size: .77rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .yield-table tr:last-child td { border-bottom: none; }
+
+  /* FORECAST */
+  .forecast-wrap { position: relative; height: 86px; margin: 10px 0; }
+  .forecast-wrap svg { width: 100%; height: 100%; }
+  .forecast-stats { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+  .f-stat-item { display: flex; justify-content: space-between; align-items: center; }
+  .f-stat-label { font-family: var(--mono); font-size: .57rem; color: var(--text2); }
+  .f-stat-val   { font-size: .9rem; font-weight: 800; }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-thumb { background: var(--b5); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+{% include 'index/sidebar.html' %}
+
+<main>
+  <header>
+    <div>
+      <div class="page-title">Wholesale Operations</div>
+      <div class="page-date">Distribution · Bulk Sales · Partner Ledger</div>
+    </div>
+    <div class="header-actions">
+      <button class="btn">Download Ledger</button>
+      <button class="btn btn-primary">+ New Bulk Order</button>
+    </div>
+  </header>
+
+  <div class="content">
+    <!-- SECTION 1 — KPI CARDS -->
+    <div class="kpi-grid">
+      <div class="kpi kpi-accent">
+        <div class="kpi-label">Wholesale Revenue</div>
+        <div class="kpi-value" style="color:var(--b1)">KSh 84,500</div>
+        <div class="kpi-change up">↑ 12% vs last month</div>
+      </div>
+      <div class="kpi kpi-accent">
+        <div class="kpi-label">Total Bulk Orders</div>
+        <div class="kpi-value" style="color:var(--b1)">42</div>
+        <div class="kpi-change up">↑ 8 this month</div>
+      </div>
+      <div class="kpi kpi-warn">
+        <div class="kpi-label">Pending Deliveries</div>
+        <div class="kpi-value" style="color:var(--warn)">5</div>
+        <div class="kpi-change warn">⚠ Dispatch required</div>
+      </div>
+      <div class="kpi kpi-accent">
+        <div class="kpi-label">Active Wholesale Clients</div>
+        <div class="kpi-value" style="color:var(--b1)">12 partners</div>
+        <div class="kpi-change up">+2 new this quarter</div>
+      </div>
+      <div class="kpi kpi-accent">
+        <div class="kpi-label">Bulk Stock Available</div>
+        <div class="kpi-value" style="color:var(--b1)">1,200 L</div>
+        <div class="kpi-change up">On track</div>
+      </div>
+    </div>
+
+    <!-- SECTION 2 — DISTRIBUTION ANALYTICS -->
+    <div class="row row-3-2">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Wholesale Distribution Trends</div>
+            <div class="card-sub">Litres sold by day — last 7 days</div>
+          </div>
+          <span class="tag tag-blue">Volume Analysis</span>
+        </div>
+        <div class="milk-flow">
+          <div class="bar-wrap">
+            <div class="bar-val">190</div>
+            <div class="bar-track"><div class="bar-fill" style="height:60%"></div></div>
+            <div class="bar-label">MON</div>
+          </div>
+          <div class="bar-wrap">
+            <div class="bar-val">220</div>
+            <div class="bar-track"><div class="bar-fill" style="height:70%"></div></div>
+            <div class="bar-label">TUE</div>
+          </div>
+          <div class="bar-wrap">
+            <div class="bar-val">175</div>
+            <div class="bar-track" style="background:#fffbeb"><div class="bar-fill" style="height:55%; background:linear-gradient(180deg,#d97706,#fcd34d)"></div></div>
+            <div class="bar-label">WED</div>
+          </div>
+          <div class="bar-wrap">
+            <div class="bar-val">240</div>
+            <div class="bar-track"><div class="bar-fill" style="height:78%"></div></div>
+            <div class="bar-label">THU</div>
+          </div>
+          <div class="bar-wrap">
+            <div class="bar-val">265</div>
+            <div class="bar-track"><div class="bar-fill" style="height:85%"></div></div>
+            <div class="bar-label">FRI</div>
+          </div>
+          <div class="bar-wrap">
+            <div class="bar-val">210</div>
+            <div class="bar-track"><div class="bar-fill" style="height:68%"></div></div>
+            <div class="bar-label">SAT</div>
+          </div>
+          <div class="bar-wrap">
+            <div class="bar-val" style="color:var(--b1); font-weight:700">248</div>
+            <div class="bar-track" style="background:#eff6ff"><div class="bar-fill" style="height:80%"></div></div>
+            <div class="bar-label" style="color:var(--b1); font-weight:700">TODAY</div>
+          </div>
+        </div>
+        <div class="legend-row">
+          <span style="color:var(--b1)">■ On track</span>
+          <span style="color:var(--warn)">■ Low demand</span>
+          <span style="color:var(--success)">■ Peak demand</span>
+          <span style="color:var(--b3)">■ Today</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Delivery Status Feed</div>
+            <div class="card-sub">Logistics alerts and dispatch status</div>
+          </div>
+        </div>
+        <div class="anomaly-item">
+          <div class="anom-icon anom-critical" style="color:var(--danger)">🚚</div>
+          <div>
+            <div class="anom-title">Delivery Delay — City Supermarket</div>
+            <div class="anom-desc">Order: 120L Fresh Milk. Status: Delayed due to vehicle routing.</div>
+            <div class="anom-time">Today · 08:12 AM</div>
+          </div>
+        </div>
+        <div class="anomaly-item">
+          <div class="anom-icon anom-info-bg" style="color:var(--b1)">✅</div>
+          <div>
+            <div class="anom-title">Dispatch Ready — Hotel Central</div>
+            <div class="anom-desc">Order: 80L Bulk Milk. Status: Awaiting driver confirmation.</div>
+            <div class="anom-time">Today · 09:05 AM</div>
+          </div>
+        </div>
+        <div class="anomaly-item">
+          <div class="anom-icon anom-warn-bg" style="color:var(--warn)">💡</div>
+          <div>
+            <div class="anom-title">Inventory Transfer Suggested</div>
+            <div class="anom-desc">Strawberry Yoghurt stock high at Petro Shop. Recommend sending 2 cases to Wholesale channel.</div>
+            <div class="anom-time">Today · 09:45 AM</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 3 — WHOLESALE TRANSACTION LEDGER -->
+    <div class="row row-2-3">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Wholesale Ledger</div>
+            <div class="card-sub">Recent bulk partner transactions</div>
+          </div>
+        </div>
+        <table class="yield-table">
+          <thead>
+            <tr><th>Client</th><th>Product</th><th>Quantity</th><th>Total (KSh)</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Hotel Central</strong></td>
+              <td>Bulk Milk</td>
+              <td>50 L</td>
+              <td>3,500</td>
+              <td><span class="tag tag-green">Delivered</span></td>
+            </tr>
+            <tr>
+              <td><strong>City Supermarket</strong></td>
+              <td>Yoghurt Case Mix</td>
+              <td>12 units</td>
+              <td>1,440</td>
+              <td><span class="tag">Pending</span></td>
+            </tr>
+            <tr>
+              <td><strong>Lakeside Resort</strong></td>
+              <td>Bulk Milk</td>
+              <td>100 L</td>
+              <td>7,000</td>
+              <td><span class="tag tag-green">Delivered</span></td>
+            </tr>
+            <tr>
+              <td><strong>Green Grocers Ltd</strong></td>
+              <td>Mala Bulk</td>
+              <td>40 L</td>
+              <td>2,800</td>
+              <td><span class="tag tag-warn">In Transit</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Top Wholesale Clients</div>
+            <div class="card-sub">Revenue contribution by partner</div>
+          </div>
+        </div>
+        <div class="product-row">
+          <div class="product-name">Hotel Central</div>
+          <div class="progress-track"><div class="progress-fill" style="width:45%"></div></div>
+          <div class="product-margin">45%</div>
+        </div>
+        <div class="product-row">
+          <div class="product-name">Lakeside Resort</div>
+          <div class="progress-track"><div class="progress-fill" style="width:30%"></div></div>
+          <div class="product-margin">30%</div>
+        </div>
+        <div class="product-row">
+          <div class="product-name">City Supermarket</div>
+          <div class="progress-track"><div class="progress-fill" style="width:15%"></div></div>
+          <div class="product-margin">15%</div>
+        </div>
+        <div class="product-row">
+          <div class="product-name">Others</div>
+          <div class="progress-track"><div class="progress-fill" style="width:10%"></div></div>
+          <div class="product-margin">10%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 4 — WHOLESALE PRODUCT DEMAND -->
+    <div class="row row-3">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Product Demand (Wholesale)</div>
+            <div class="card-sub">Litres sold today</div>
+          </div>
+        </div>
+        <div class="product-row">
+          <div class="product-name">Fresh Milk</div>
+          <div class="progress-track"><div class="progress-fill" style="width:85%"></div></div>
+          <div class="product-margin" style="width:auto">320 L</div>
+        </div>
+        <div class="product-row">
+          <div class="product-name">Mala</div>
+          <div class="progress-track"><div class="progress-fill" style="width:50%"></div></div>
+          <div class="product-margin" style="width:auto">180 L</div>
+        </div>
+        <div class="product-row">
+          <div class="product-name">Vanilla Yoghurt</div>
+          <div class="progress-track"><div class="progress-fill" style="width:30%"></div></div>
+          <div class="product-margin" style="width:auto">95 L</div>
+        </div>
+        <div class="product-row">
+          <div class="product-name">Strawberry Yoghurt</div>
+          <div class="progress-track"><div class="progress-fill" style="width:25%"></div></div>
+          <div class="product-margin" style="width:auto">70 L</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Inventory Pressure</div>
+            <div class="card-sub">Approaching shortage</div>
+          </div>
+        </div>
+        <div class="product-row">
+          <div class="product-name">Fresh Milk</div>
+          <div class="progress-track"><div class="progress-fill fill-warn" style="width:35%"></div></div>
+          <div class="product-margin" style="width:auto">420 L</div>
+        </div>
+        <div class="product-row">
+          <div class="product-name">Mala</div>
+          <div class="progress-track"><div class="progress-fill fill-warn" style="width:25%"></div></div>
+          <div class="product-margin" style="width:auto">210 L</div>
+        </div>
+        <div class="product-row">
+          <div class="product-name">Yoghurt Vanilla</div>
+          <div class="progress-track"><div class="progress-fill fill-warn" style="width:20%"></div></div>
+          <div class="product-margin" style="width:auto">95 units</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Revenue Forecast (Wholesale)</div>
+            <div class="card-sub">Next 30 days projected</div>
+          </div>
+          <span class="tag tag-green">↑ 7% Growth</span>
+        </div>
+        <div class="forecast-wrap">
+          <svg viewBox="0 0 280 86" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#1a56db" stop-opacity=".18"/>
+                <stop offset="100%" stop-color="#1a56db" stop-opacity="0"/>
+              </linearGradient>
+              <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#1a56db"/>
+                <stop offset="100%" stop-color="#60a5fa"/>
+              </linearGradient>
+            </defs>
+            <path d="M0,60 C40,55 80,45 120,48 C160,51 200,35 240,32 C260,30 270,28 280,25 L280,86 L0,86 Z" fill="url(#areaGrad)"/>
+            <path d="M0,60 C40,55 80,45 120,48 C160,51 200,35 240,32 C260,30 270,28 280,25" fill="none" stroke="url(#lineGrad)" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="240" cy="32" r="3" fill="#1a56db"/>
+          </svg>
+        </div>
+        <div class="forecast-stats">
+          <div class="f-stat-item">
+            <span class="f-stat-label">Projected revenue</span>
+            <span class="f-stat-val" style="color:var(--b1)">KSh 112,000</span>
+          </div>
+          <div class="f-stat-item">
+            <span class="f-stat-label">Average daily orders</span>
+            <span class="f-stat-val">9</span>
+          </div>
+          <div class="f-stat-item">
+            <span class="f-stat-label">Growth projection</span>
+            <span class="f-stat-val" style="color:var(--success)">+7%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+</body>
+</html>

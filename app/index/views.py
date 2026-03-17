@@ -62,3 +62,12 @@ def cows(request):
 
 def production(request):
     return render(request, 'index/production.html')
+
+def wholesale(request):
+    return render(request, 'index/wholesale.html')
+
+def forecasting(request):
+    return render(request, 'index/forecasting.html')
+
+def petroshop(request):
+    return render(request, 'index/petroshop.html')
