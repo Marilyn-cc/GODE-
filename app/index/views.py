@@ -65,3 +65,9 @@ def production(request):
 
 def mpesa(request):
     return render(request, 'index/mpesa.html')
+
+def value(request):
+    return render(request, 'index/value.html')
+
+def feedinputs(request):
+    return render(request, 'index/feedinputs.html')

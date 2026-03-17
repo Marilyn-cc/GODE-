@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>GODE · Value Addition</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f4fb;--surface:#fff;--b6:#e8f1fc;--border:#d6e0f0;
+  --b1:#1e3a5f;--b2:#2563a8;--b3:#4a90d9;--b4:#7eb8f7;--b5:#b3d4f7;
+  --success:#2d6a2f;--warn:#d97706;--danger:#dc2626;
+  --text:#0f172a;--text2:#64748b;--muted:#94a3b8;
+  --sans:'Plus Jakarta Sans',sans-serif;--mono:'IBM Plex Mono',monospace;
+  --grad-h:linear-gradient(90deg,#1e3a5f 0%,#4a90d9 100%);
+}
+html{font-size:13.5px}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;display:flex}
+aside{width:216px;min-height:100vh;background:var(--b1);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:100}
+.logo{padding:22px 18px 16px;border-bottom:1px solid rgba(255,255,255,.12)}
+.logo-mark{font-weight:800;font-size:1.2rem;letter-spacing:-.5px;color:#fff}
+.logo-sub{font-family:var(--mono);font-size:.56rem;color:rgba(255,255,255,.5);letter-spacing:.1em;margin-top:1px}
+nav{padding:14px 10px;flex:1}
+.nav-label{font-family:var(--mono);font-size:.57rem;color:rgba(255,255,255,.4);letter-spacing:.12em;text-transform:uppercase;padding:12px 10px 5px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:7px;cursor:pointer;color:rgba(255,255,255,.65);font-size:.8rem;font-weight:600;transition:all .15s;margin-bottom:1px}
+.nav-item:hover{background:rgba(255,255,255,.1);color:#fff}
+.nav-item.active{background:rgba(255,255,255,.18);color:#fff}
+.nav-icon{width:15px;height:15px;flex-shrink:0}
+.badge{margin-left:auto;background:#ef4444;color:#fff;font-family:var(--mono);font-size:.52rem;padding:1px 5px;border-radius:10px}
+.sidebar-footer{padding:14px 16px;border-top:1px solid rgba(255,255,255,.12)}
+.user-chip{display:flex;align-items:center;gap:10px}
+.avatar{width:32px;height:32px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.68rem;color:#fff;border:1.5px solid rgba(255,255,255,.3)}
+.user-info .name{font-size:.78rem;font-weight:700;color:#fff}
+.user-info .role{font-family:var(--mono);font-size:.57rem;color:rgba(255,255,255,.5)}
+main{margin-left:216px;flex:1;display:flex;flex-direction:column}
+header{padding:16px 30px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface);position:sticky;top:0;z-index:10;box-shadow:0 1px 4px rgba(30,58,95,.06)}
+.page-title{font-size:1.05rem;font-weight:800}
+.page-date{font-family:var(--mono);font-size:.62rem;color:var(--text2);margin-top:2px}
+.tab-bar{display:flex;gap:4px}
+.tab{padding:6px 14px;border-radius:6px;font-size:.78rem;font-weight:600;cursor:pointer;color:var(--text2)}
+.tab.active{background:var(--b6);color:var(--b1)}
+.content{padding:26px 30px;flex:1}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:22px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 16px;transition:box-shadow .2s;animation:fadeUp .4s ease both}
+.kpi:hover{box-shadow:0 4px 16px rgba(30,58,95,.1)}
+.kpi:nth-child(1){animation-delay:.04s}.kpi:nth-child(2){animation-delay:.08s}.kpi:nth-child(3){animation-delay:.12s}.kpi:nth-child(4){animation-delay:.16s}.kpi:nth-child(5){animation-delay:.20s}
+.kpi-blue{border-top:3px solid var(--b1)}.kpi-green{border-top:3px solid var(--success)}.kpi-warn{border-top:3px solid var(--warn)}.kpi-danger{border-top:3px solid var(--danger)}
+.kpi-label{font-family:var(--mono);font-size:.58rem;color:var(--text2);letter-spacing:.07em;text-transform:uppercase}
+.kpi-value{font-size:1.55rem;font-weight:800;margin-top:6px;line-height:1}
+.up{color:var(--success)}.down{color:var(--danger)}.warn{color:var(--warn)}.blue{color:var(--b1)}
+.section-banner{background:linear-gradient(135deg,#0f4c4c 0%,#0e7490 55%,#22b8b8 100%);border-radius:12px;padding:20px 24px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;animation:fadeUp .4s ease both;animation-delay:.2s}
+.banner-left h2{font-size:1rem;font-weight:800;color:#fff;margin-bottom:3px}
+.banner-left p{font-family:var(--mono);font-size:.62rem;color:rgba(255,255,255,.65)}
+.banner-stats{display:flex;gap:28px}
+.b-stat-val{font-size:1.2rem;font-weight:800;color:#fff;line-height:1}
+.b-stat-lbl{font-family:var(--mono);font-size:.56rem;color:rgba(255,255,255,.6);margin-top:2px}
+.banner-divider{width:1px;background:rgba(255,255,255,.2);align-self:stretch}
+.row{display:grid;gap:14px;margin-bottom:14px}
+.r-3-2{grid-template-columns:3fr 2fr}
+.r-3{grid-template-columns:1fr 1fr 1fr}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;transition:box-shadow .2s;animation:fadeUp .4s ease both;animation-delay:.15s}
+.card:hover{box-shadow:0 4px 16px rgba(30,58,95,.08)}
+.card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
+.card-title{font-weight:800;font-size:.88rem}
+.card-sub{font-family:var(--mono);font-size:.58rem;color:var(--text2);margin-top:2px}
+.bt{width:100%;border-collapse:collapse}
+.bt th{font-family:var(--mono);font-size:.57rem;color:var(--text2);letter-spacing:.05em;text-transform:uppercase;text-align:left;padding:0 10px 10px 0;border-bottom:2px solid var(--border)}
+.bt td{padding:0 10px 0 0;height:46px;font-size:.78rem;border-bottom:1px solid var(--border);vertical-align:middle}
+.bt tbody tr:last-child td{border-bottom:none}
+.bt tbody tr:hover td{background:#fafbff}
+.pn{font-weight:700;font-size:.8rem;line-height:1.2}
+.ps{font-family:var(--mono);font-size:.56rem;color:var(--muted);display:block}
+.pill{font-family:var(--mono);font-size:.55rem;padding:3px 8px;border-radius:4px;white-space:nowrap;display:inline-block}
+.p-active{background:var(--b6);color:var(--b1);border:1px solid var(--b4)}
+.p-ready{background:#f0fdf4;color:var(--success);border:1px solid #86efac}
+.p-exp{background:#fffbeb;color:var(--warn);border:1px solid #fcd34d}
+.mr{display:flex;align-items:center;gap:12px;margin-bottom:11px}
+.mr:last-child{margin-bottom:0}
+.mn{font-size:.77rem;font-weight:700;width:140px;flex-shrink:0;line-height:1.2}
+.ms{font-family:var(--mono);font-size:.56rem;color:var(--muted);display:block;font-weight:400}
+.mt{flex:1;height:7px;background:var(--b6);border-radius:4px;overflow:hidden}
+.mf{height:100%;border-radius:4px;background:var(--grad-h)}
+.mf-w{background:linear-gradient(90deg,var(--warn),#fcd34d)}
+.mf-d{background:linear-gradient(90deg,var(--danger),#fca5a5)}
+.mp{font-family:var(--mono);font-size:.7rem;font-weight:600;width:36px;text-align:right;flex-shrink:0}
+.ei{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.ei:last-child{border-bottom:none}
+.ed{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.en{font-size:.78rem;font-weight:700;flex:1;line-height:1.2}
+.es{font-family:var(--mono);font-size:.56rem;color:var(--muted);display:block;font-weight:400}
+.ev{font-family:var(--mono);font-size:.7rem;font-weight:700;width:52px;text-align:right;flex-shrink:0}
+.ar{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:7px;margin-bottom:7px}
+.ar:last-child{margin-bottom:0}
+.cr{margin-bottom:12px}
+.cr:last-child{margin-bottom:0}
+.cl{display:flex;justify-content:space-between;margin-bottom:4px}
+.ct{font-size:.77rem;font-weight:600}
+.cv{font-family:var(--mono);font-size:.66rem;color:var(--text2)}
+.ck{height:8px;background:var(--b6);border-radius:5px;overflow:hidden;position:relative}
+.cr-rev{height:100%;border-radius:5px;background:var(--grad-h);position:absolute;left:0;top:0}
+.cr-cost{height:100%;border-radius:5px;position:absolute;left:0;top:0}
+.tf{display:flex;gap:20px;padding:10px 0 0;margin-top:2px;border-top:2px solid var(--border);flex-wrap:wrap}
+.tfi{font-family:var(--mono);font-size:.6rem;color:var(--text2)}
+.tfi strong{color:var(--text)}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--b5);border-radius:2px}
+</style>
+</head>
+<body>
+
+<aside>
+  <div class="logo">
+    <div class="logo-mark">GODE</div>
+    <div class="logo-sub">AGRI-BUSINESS · INTELLIGENCE</div>
+  </div>
+  <nav>
+    <div class="nav-label">Overview</div>
+    <div class="nav-item">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </div>
+    <div class="nav-label">Production</div>
+    <div class="nav-item">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3h18M3 9h18M3 15h10M3 21h6"/></svg>
+      Per-Cow Yield
+    </div>
+    <div class="nav-item">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/></svg>
+      Milk Production
+    </div>
+    <div class="nav-label">Sales & Finance</div>
+    <div class="nav-item active">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 17v-6h13M9 11V5H4v12h5"/></svg>
+      Value Addition
+    </div>
+    <div class="nav-item">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+      M-Pesa Ledger
+      <span class="badge">2</span>
+    </div>
+    <div class="nav-item">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      Wholesale & Petro
+    </div>
+    <div class="nav-label">Intelligence</div>
+    <div class="nav-item">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      Forecasting
+    </div>
+    <div class="nav-item">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4"/></svg>
+      ROI Analytics
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-chip">
+      <div class="avatar">GM</div>
+      <div class="user-info">
+        <div class="name">G. Manager</div>
+        <div class="role">ADMIN · ORUBA FARM</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<main>
+  <header>
+    <div>
+      <div class="page-title">Value Addition</div>
+      <div class="page-date" id="page-date">&nbsp;·&nbsp; Production Room · Yoghurt · Mala · Honey</div>
+      <script>
+        const d = new Date();
+        const label = d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+        document.getElementById('page-date').insertAdjacentText('afterbegin', label);
+      </script>
+    </div>
+    <div class="tab-bar">
+      <div class="tab active">Today</div>
+      <div class="tab">This Week</div>
+      <div class="tab">This Month</div>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <div class="kpi-grid">
+      <div class="kpi kpi-blue">
+        <div class="kpi-label">Raw Milk Allocated</div>
+        <div class="kpi-value blue">74 L</div>
+      </div>
+      <div class="kpi kpi-green">
+        <div class="kpi-label">Active Batches</div>
+        <div class="kpi-value" style="color:var(--success)">6</div>
+      </div>
+      <div class="kpi kpi-blue">
+        <div class="kpi-label">Units Produced</div>
+        <div class="kpi-value blue">186</div>
+      </div>
+      <div class="kpi kpi-warn">
+        <div class="kpi-label">Expiring in 48hrs</div>
+        <div class="kpi-value" style="color:var(--warn)">18</div>
+      </div>
+      <div class="kpi kpi-green">
+        <div class="kpi-label">Avg Gross Margin</div>
+        <div class="kpi-value" style="color:var(--success)">74%</div>
+      </div>
+    </div>
+
+    <div class="section-banner">
+      <div class="banner-left">
+        <h2>Production Room Allocation — Today</h2>
+        <p>Raw milk flow from parlour into production · batch-level tracking</p>
+      </div>
+      <div class="banner-stats">
+        <div><div class="b-stat-val">74 L</div><div class="b-stat-lbl">Into Production</div></div>
+        <div class="banner-divider"></div>
+        <div><div class="b-stat-val">50 L</div><div class="b-stat-lbl">Yoghurt Batches</div></div>
+        <div class="banner-divider"></div>
+        <div><div class="b-stat-val">24 L</div><div class="b-stat-lbl">Mala Batches</div></div>
+        <div class="banner-divider"></div>
+        <div><div class="b-stat-val" style="color:#fcd34d">0 L</div><div class="b-stat-lbl">Spoilage</div></div>
+      </div>
+    </div>
+
+    <div class="row r-3-2">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Active Production Batches</div>
+            <div class="card-sub">Raw milk → product · cost · revenue · status</div>
+          </div>
+        </div>
+        <table class="bt">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Batch ID</th>
+              <th>Milk Used</th>
+              <th>Units</th>
+              <th>Cost (KSh)</th>
+              <th>Revenue (KSh)</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><div class="pn">Vanilla Yoghurt 250ml<span class="ps">YOG-VAN-250</span></div></td>
+              <td><span style="font-family:var(--mono);font-size:.72rem;color:var(--b1);font-weight:600">B-2406-01</span></td>
+              <td><span style="font-family:var(--mono)">18 L</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--b1)">72</span></td>
+              <td><span style="font-family:var(--mono)">2,160</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--success)">8,640</span></td>
+              <td><span class="pill p-ready">Ready</span></td>
+            </tr>
+            <tr>
+              <td><div class="pn">Strawberry Yoghurt 250ml<span class="ps">YOG-STR-250</span></div></td>
+              <td><span style="font-family:var(--mono);font-size:.72rem;color:var(--b1);font-weight:600">B-2406-02</span></td>
+              <td><span style="font-family:var(--mono)">14 L</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--warn)">52</span></td>
+              <td><span style="font-family:var(--mono)">1,820</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--warn)">6,240</span></td>
+              <td><span class="pill p-exp">Expiring Soon</span></td>
+            </tr>
+            <tr>
+              <td><div class="pn">Mala 500ml<span class="ps">MAL-500</span></div></td>
+              <td><span style="font-family:var(--mono);font-size:.72rem;color:var(--b1);font-weight:600">B-2406-03</span></td>
+              <td><span style="font-family:var(--mono)">16 L</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--b1)">32</span></td>
+              <td><span style="font-family:var(--mono)">960</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--success)">3,840</span></td>
+              <td><span class="pill p-active">In Production</span></td>
+            </tr>
+            <tr>
+              <td><div class="pn">Raw Honey 500g<span class="ps">HON-500</span></div></td>
+              <td><span style="font-family:var(--mono);font-size:.72rem;color:var(--b1);font-weight:600">B-2406-04</span></td>
+              <td><span style="font-family:var(--mono)">—</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--b1)">30</span></td>
+              <td><span style="font-family:var(--mono)">1,350</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--success)">13,500</span></td>
+              <td><span class="pill p-ready">Ready</span></td>
+            </tr>
+            <tr>
+              <td><div class="pn">Flavoured Yoghurt 500ml<span class="ps">YOG-FLV-500</span></div></td>
+              <td><span style="font-family:var(--mono);font-size:.72rem;color:var(--b1);font-weight:600">B-2406-05</span></td>
+              <td><span style="font-family:var(--mono)">18 L</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--danger)">24</span></td>
+              <td><span style="font-family:var(--mono)">3,600</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--danger)">5,760</span></td>
+              <td><span class="pill p-active">In Production</span></td>
+            </tr>
+            <tr>
+              <td><div class="pn">Mala 1 Litre<span class="ps">MAL-1L</span></div></td>
+              <td><span style="font-family:var(--mono);font-size:.72rem;color:var(--b1);font-weight:600">B-2406-06</span></td>
+              <td><span style="font-family:var(--mono)">8 L</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--b1)">8</span></td>
+              <td><span style="font-family:var(--mono)">480</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--success)">1,360</span></td>
+              <td><span class="pill p-ready">Ready</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="tf">
+          <span class="tfi"><strong>74 L</strong> milk used</span>
+          <span class="tfi"><strong>KSh 10,370</strong> total cost</span>
+          <span class="tfi"><strong>KSh 39,340</strong> projected revenue</span>
+          <span class="tfi" style="color:var(--warn)"><strong>18 units</strong> expiring soon</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Gross Margin by Product</div>
+            <div class="card-sub">Net profit after raw milk + processing costs</div>
+          </div>
+        </div>
+        <div class="mr"><div class="mn">Raw Honey 500g<span class="ms">HON-500</span></div><div class="mt"><div class="mf" style="width:91%"></div></div><div class="mp up">91%</div></div>
+        <div class="mr"><div class="mn">Vanilla Yoghurt 250ml<span class="ms">YOG-VAN-250</span></div><div class="mt"><div class="mf" style="width:82%"></div></div><div class="mp up">82%</div></div>
+        <div class="mr"><div class="mn">Strawberry Yoghurt<span class="ms">YOG-STR-250</span></div><div class="mt"><div class="mf" style="width:74%"></div></div><div class="mp up">74%</div></div>
+        <div class="mr"><div class="mn">Mala 500ml<span class="ms">MAL-500</span></div><div class="mt"><div class="mf" style="width:61%"></div></div><div class="mp warn">61%</div></div>
+        <div class="mr"><div class="mn">Mala 1L<span class="ms">MAL-1L</span></div><div class="mt"><div class="mf" style="width:58%"></div></div><div class="mp warn">58%</div></div>
+        <div class="mr"><div class="mn">Flavoured Yoghurt 500ml<span class="ms">YOG-FLV-500</span></div><div class="mt"><div class="mf mf-d" style="width:36%"></div></div><div class="mp down">36%</div></div>
+      </div>
+    </div>
+
+    <div class="row r-3">
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Milk Allocation Breakdown</div>
+            <div class="card-sub">74L from parlour into production room</div>
+          </div>
+        </div>
+        <div class="ar" style="background:var(--b1)">
+          <span style="font-size:.78rem;font-weight:700;color:#fff">Parlour Output</span>
+          <span style="font-family:var(--mono);font-size:.8rem;font-weight:800;color:#fff">74 L</span>
+        </div>
+        <div style="text-align:center;padding:4px 0;font-family:var(--mono);font-size:.72rem;color:var(--muted)">↓ allocated to batches</div>
+        <div class="ar" style="background:var(--b6)">
+          <span style="font-size:.78rem;font-weight:700;color:var(--b1)">Yoghurt Batches</span>
+          <span style="font-family:var(--mono);font-size:.76rem;font-weight:600;color:var(--b1)">50 L · 68%</span>
+        </div>
+        <div class="ar" style="background:#f0fdf4;margin-top:7px">
+          <span style="font-size:.78rem;font-weight:700;color:var(--success)">Mala Batches</span>
+          <span style="font-family:var(--mono);font-size:.76rem;font-weight:600;color:var(--success)">24 L · 32%</span>
+        </div>
+        <div class="ar" style="background:#fef2f2;margin-top:7px">
+          <span style="font-size:.78rem;font-weight:700;color:var(--danger)">Spoilage</span>
+          <span style="font-family:var(--mono);font-size:.76rem;font-weight:600;color:var(--danger)">0 L · 0%</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Expiry Date Tracker</div>
+            <div class="card-sub">All batches · days remaining to expiry</div>
+          </div>
+        </div>
+        <div class="ei"><div class="ed" style="background:var(--danger)"></div><div style="flex:1"><div class="en">Strawberry Yoghurt 250ml<span class="es">18 units · Petro Shop · B-2406-02</span></div></div><div class="ev down">2 days</div></div>
+        <div class="ei"><div class="ed" style="background:var(--warn)"></div><div style="flex:1"><div class="en">Flavoured Yoghurt 500ml<span class="es">12 units · Wholesale · B-2406-05</span></div></div><div class="ev warn">4 days</div></div>
+        <div class="ei"><div class="ed" style="background:var(--b3)"></div><div style="flex:1"><div class="en">Mala 500ml<span class="es">32 units · Wholesale · B-2406-03</span></div></div><div class="ev blue">7 days</div></div>
+        <div class="ei"><div class="ed" style="background:var(--b3)"></div><div style="flex:1"><div class="en">Mala 1 Litre<span class="es">8 units · Wholesale · B-2406-06</span></div></div><div class="ev blue">7 days</div></div>
+        <div class="ei"><div class="ed" style="background:var(--b3)"></div><div style="flex:1"><div class="en">Vanilla Yoghurt 250ml<span class="es">72 units · Petro Shop · B-2406-01</span></div></div><div class="ev blue">9 days</div></div>
+        <div class="ei"><div class="ed" style="background:var(--success)"></div><div style="flex:1"><div class="en">Raw Honey 500g<span class="es">30 units · Petro Shop · B-2406-04</span></div></div><div class="ev up">365 days</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Cost vs. Projected Revenue</div>
+            <div class="card-sub">Processing cost against expected sale value</div>
+          </div>
+        </div>
+        <div class="cr"><div class="cl"><span class="ct">Raw Honey 500g</span><span class="cv">1,350 → 13,500</span></div><div class="ck"><div class="cr-rev" style="width:100%"></div><div class="cr-cost" style="width:10%;background:rgba(30,58,95,.35)"></div></div></div>
+        <div class="cr"><div class="cl"><span class="ct">Vanilla Yoghurt 250ml</span><span class="cv">2,160 → 8,640</span></div><div class="ck"><div class="cr-rev" style="width:100%"></div><div class="cr-cost" style="width:18%;background:rgba(30,58,95,.35)"></div></div></div>
+        <div class="cr"><div class="cl"><span class="ct">Strawberry Yoghurt</span><span class="cv">1,820 → 6,240</span></div><div class="ck"><div class="cr-rev" style="width:100%"></div><div class="cr-cost" style="width:26%;background:rgba(30,58,95,.35)"></div></div></div>
+        <div class="cr"><div class="cl"><span class="ct">Mala 500ml</span><span class="cv">960 → 3,840</span></div><div class="ck"><div class="cr-rev" style="width:100%"></div><div class="cr-cost" style="width:39%;background:rgba(217,119,6,.45)"></div></div></div>
+        <div class="cr"><div class="cl"><span class="ct">Mala 1L</span><span class="cv">480 → 1,360</span></div><div class="ck"><div class="cr-rev" style="width:100%"></div><div class="cr-cost" style="width:42%;background:rgba(217,119,6,.45)"></div></div></div>
+        <div class="cr"><div class="cl"><span class="ct">Flavoured Yoghurt 500ml</span><span class="cv">3,600 → 5,760</span></div><div class="ck"><div class="cr-rev" style="width:100%"></div><div class="cr-cost" style="width:64%;background:rgba(220,38,38,.5)"></div></div></div>
+        <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);display:flex;justify-content:space-between">
+          <div>
+            <div style="font-family:var(--mono);font-size:.57rem;color:var(--text2);text-transform:uppercase;letter-spacing:.06em">Total Cost</div>
+            <div style="font-size:1.05rem;font-weight:800;color:var(--danger);margin-top:3px">KSh 10,370</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-family:var(--mono);font-size:.57rem;color:var(--text2);text-transform:uppercase;letter-spacing:.06em">Projected Revenue</div>
+            <div style="font-size:1.05rem;font-weight:800;color:var(--success);margin-top:3px">KSh 39,340</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+</body>
+</html>
