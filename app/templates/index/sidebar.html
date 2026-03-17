@@ -80,3 +80,91 @@
   </div>
 
 </aside>
+
+<!-- Mobile Responsive Logic (Global) -->
+<style>
+  /* Mobile Toggle Button */
+  .mobile-nav-toggle {
+    display: none;
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 56px;
+    height: 56px;
+    background: #1e3a5f;
+    color: white;
+    border-radius: 50%;
+    border: none;
+    box-shadow: 0 4px 16px rgba(30,58,95,0.4);
+    z-index: 1001;
+    cursor: pointer;
+    font-size: 1.5rem;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+  }
+  .mobile-nav-toggle:active { transform: scale(0.95); }
+
+  @media (max-width: 900px) {
+    /* Sidebar Off-Canvas */
+    aside {
+      transform: translateX(-105%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      width: 270px;
+      box-shadow: 4px 0 24px rgba(0,0,0,0.25);
+    }
+    aside.open { transform: translateX(0); }
+    
+    /* Main Content Full Width */
+    main { margin-left: 0 !important; width: 100%; }
+    
+    /* Show Toggle */
+    .mobile-nav-toggle { display: flex; }
+    
+    /* Grid Collapse - Universal */
+    .kpi-grid { grid-template-columns: repeat(2, 1fr) !important; }
+    
+    /* Row Collapse - Handle all naming conventions */
+    .row, .row-3-2, .row-2-3, .row-3, .row-2,
+    .r-3-2, .r-2-3, .r-3, .r-2, .r-full {
+      display: flex !important;
+      flex-direction: column;
+      gap: 16px !important;
+    }
+    
+    /* Adjustments */
+    header { padding: 14px 18px; }
+    .content { padding: 18px; }
+    .card { overflow-x: auto; }
+    table { min-width: 600px; } /* Force scroll for tables */
+    
+    /* Banner Stack */
+    .section-banner { flex-direction: column; align-items: flex-start; gap: 16px; }
+    .banner-stats { width: 100%; justify-content: space-between; overflow-x: auto; }
+  }
+
+  @media (max-width: 480px) {
+    .kpi-grid { grid-template-columns: 1fr !important; }
+    .banner-stats { gap: 16px; }
+    .b-stat-val { font-size: 1rem; }
+  }
+</style>
+
+<button class="mobile-nav-toggle" onclick="document.querySelector('aside').classList.toggle('open')" aria-label="Toggle Menu">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+</button>
+
+<script>
+  // Close sidebar when clicking outside on mobile
+  document.addEventListener('click', function(e) {
+    const aside = document.querySelector('aside');
+    const toggle = document.querySelector('.mobile-nav-toggle');
+    if (window.innerWidth <= 900 && 
+        aside && 
+        aside.classList.contains('open') && 
+        !aside.contains(e.target) && 
+        !toggle.contains(e.target)) {
+      aside.classList.remove('open');
+    }
+  });
+</script>
