@@ -63,6 +63,14 @@ def cows(request):
 def production(request):
     return render(request, 'index/production.html')
 
+def mpesa(request):
+    return render(request, 'index/mpesa.html')
+
+def value(request):
+    return render(request, 'index/value.html')
+
+def feedinputs(request):
+    return render(request, 'index/feedinputs.html')
 def wholesale(request):
     return render(request, 'index/wholesale.html')
 
