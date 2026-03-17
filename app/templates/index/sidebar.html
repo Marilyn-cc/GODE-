@@ -64,15 +64,15 @@
 
     <div class="nav-label">Finance</div>
 
-    <a href="{% url 'mpesa' %}">
-      <div class="nav-item {% if request.resolver_match.url_name == 'mpesa' %}active{% endif %}">
+    <a href="{% url 'mpesa_ledger' %}">
+      <div class="nav-item {% if request.resolver_match.url_name == 'mpesa_ledger' %}active{% endif %}">
         <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><rect x="2" y="4" width="12" height="9" rx="1.5" stroke="white" stroke-width="1.4"/><path d="M2 7h12M6 10h1M9 10h1" stroke="white" stroke-width="1.4" stroke-linecap="round"/></svg>
         M-Pesa Ledger
       </div>
     </a>
 
-    <a href="{% url 'petro' %}">
-      <div class="nav-item {% if request.resolver_match.url_name == 'petro' %}active{% endif %}">
+    <a href="{% url 'petroshop' %}">
+      <div class="nav-item {% if request.resolver_match.url_name == 'petroshop' %}active{% endif %}">
         <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M13 5c0 3.866-5 9-5 9S3 8.866 3 5a5 5 0 1110 0z" stroke="white" stroke-width="1.4"/><circle cx="8" cy="5" r="1.5" stroke="white" stroke-width="1.2"/></svg>
         Petro Shop
       </div>
@@ -85,98 +85,6 @@
       </div>
     </a>
 
-    <!-- Overview -->
-    <div class="nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}" 
-         onclick="window.location.href='{% url 'home' %}'" style="cursor:pointer;">
-      <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
-        <rect x="1" y="1" width="6" height="6" rx="1.5" fill="white" opacity=".9"/>
-        <rect x="9" y="1" width="6" height="6" rx="1.5" fill="white" opacity=".5"/>
-        <rect x="1" y="9" width="6" height="6" rx="1.5" fill="white" opacity=".5"/>
-        <rect x="9" y="9" width="6" height="6" rx="1.5" fill="white" opacity=".5"/>
-      </svg>
-      Overview
-    </div>
-  
-    <!-- Milk Tracking -->
-    <div class="nav-item {% if request.resolver_match.url_name == 'production' %}active{% endif %}" 
-         onclick="window.location.href='{% url 'production' %}'" style="cursor:pointer;">
-      <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
-        <circle cx="8" cy="8" r="5.5" stroke="white" stroke-width="1.4"/>
-        <path d="M8 5v3.5l2 1.5" stroke="white" stroke-width="1.4" stroke-linecap="round"/>
-      </svg>
-      Milk Tracking <span class="badge">3</span>
-    </div>
-  
-    <!-- Cow ROI -->
-    <div class="nav-item {% if request.resolver_match.url_name == 'cows' %}active{% endif %}" 
-         onclick="window.location.href='{% url 'cows' %}'" style="cursor:pointer;">
-      <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
-        <path d="M3 13V7M8 13V3M13 13V9" stroke="white" stroke-width="1.4" stroke-linecap="round"/>
-      </svg>
-      Cow ROI
-    </div>
-  
-    <!-- Forecasting -->
-    <div class="nav-item {% if request.resolver_match.url_name == 'forecasting' %}active{% endif %}" 
-         onclick="window.location.href='{% url 'forecasting' %}'" style="cursor:pointer;">
-      <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
-        <path d="M2 12l4-5 3 3 5-7" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      Forecasting
-    </div>
-  
-    <div class="nav-label">Inventory</div>
-  
-    <!-- Value Addition -->
-    <div class="nav-item {% if request.resolver_match.url_name == 'value_addition' %}active{% endif %}" 
-         onclick="window.location.href='{% url 'value_addition' %}'" style="cursor:pointer;">
-      <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
-        <rect x="2" y="7" width="12" height="7" rx="1" stroke="white" stroke-width="1.4"/>
-        <path d="M5 7V5a3 3 0 016 0v2" stroke="white" stroke-width="1.4" stroke-linecap="round"/>
-      </svg>
-      Value Addition
-    </div>
-  
-    <!-- Feed & Inputs -->
-    <div class="nav-item {% if request.resolver_match.url_name == 'feed_inputs' %}active{% endif %}" 
-         onclick="window.location.href='{% url 'feed_inputs' %}'" style="cursor:pointer;">
-      <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
-        <path d="M8 2L2 5v6l6 3 6-3V5L8 2z" stroke="white" stroke-width="1.4" stroke-linejoin="round"/>
-      </svg>
-      Feed & Inputs
-    </div>
-  
-    <div class="nav-label">Finance</div>
-  
-    <!-- M-Pesa Ledger -->
-    <div class="nav-item {% if request.resolver_match.url_name == 'mpesa_ledger' %}active{% endif %}" 
-         onclick="window.location.href='{% url 'mpesa_ledger' %}'" style="cursor:pointer;">
-      <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
-        <rect x="2" y="4" width="12" height="9" rx="1.5" stroke="white" stroke-width="1.4"/>
-        <path d="M2 7h12M6 10h1M9 10h1" stroke="white" stroke-width="1.4" stroke-linecap="round"/>
-      </svg>
-      M-Pesa Ledger
-    </div>
-  
-    <!-- Petro Shop -->
-    <div class="nav-item {% if request.resolver_match.url_name == 'petroshop' %}active{% endif %}" 
-         onclick="window.location.href='{% url 'petroshop' %}'" style="cursor:pointer;">
-      <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
-        <path d="M13 5c0 3.866-5 9-5 9S3 8.866 3 5a5 5 0 1110 0z" stroke="white" stroke-width="1.4"/>
-        <circle cx="8" cy="5" r="1.5" stroke="white" stroke-width="1.2"/>
-      </svg>
-      Petro Shop
-    </div>
-  
-    <!-- Wholesale (static) -->
-    <div class="nav-item {% if request.resolver_match.url_name == 'wholesale' %}active{% endif %}" 
-         onclick="window.location.href='{% url 'wholesale' %}'" style="cursor:pointer;">
-      <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
-        <path d="M2 13V5l6-3 6 3v8" stroke="white" stroke-width="1.4" stroke-linejoin="round"/>
-        <rect x="6" y="9" width="4" height="4" rx=".5" stroke="white" stroke-width="1.2"/>
-      </svg>
-      Wholesale
-    </div>
   </nav>
 
   <div class="sidebar-footer">
