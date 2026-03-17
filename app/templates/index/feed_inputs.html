@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>GODE · Feed & Inputs</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f4fb;--surface:#fff;--b6:#e8f1fc;--border:#d6e0f0;
+  --b1:#1e3a5f;--b2:#2563a8;--b3:#4a90d9;--b4:#7eb8f7;--b5:#b3d4f7;
+  --success:#2d6a2f;--warn:#d97706;--danger:#dc2626;
+  --text:#0f172a;--text2:#64748b;--muted:#94a3b8;
+  --sans:'Plus Jakarta Sans',sans-serif;--mono:'IBM Plex Mono',monospace;
+  --grad-h:linear-gradient(90deg,#1e3a5f 0%,#4a90d9 100%);
+}
+html{font-size:13.5px}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;display:flex}
+
+/* SIDEBAR */
+aside { width: 216px; min-height: 100vh; background: var(--b1); display: flex; flex-direction: column; position: fixed; left:0;top:0;bottom:0; z-index:100; }
+.logo { padding: 26px 20px 18px; border-bottom: 1px solid rgba(255,255,255,.12); }
+.logo-mark { font-weight: 800; font-size: 1.35rem; letter-spacing: -.5px; color: #fff; }
+.logo-sub { font-family: var(--mono); font-size: .58rem; color: rgba(255,255,255,.5); letter-spacing: .1em; margin-top: 3px; }
+nav { padding: 14px 10px; flex: 1; }
+.nav-label { font-family: var(--mono); font-size: .57rem; color: rgba(255,255,255,.4); letter-spacing: .12em; text-transform: uppercase; padding: 12px 10px 5px; }
+.nav-item { display: flex; align-items: center; gap: 9px; padding: 8px 12px; border-radius: 7px; cursor: pointer; color: rgba(255,255,255,.65); font-size: .8rem; font-weight: 600; transition: all .15s; margin-bottom: 1px; }
+.nav-item:hover { background: rgba(255,255,255,.1); color: #fff; }
+.nav-item.active { background: rgba(255,255,255,.18); color: #fff; }
+.nav-icon { width: 15px; height: 15px; flex-shrink: 0; }
+.badge { margin-left: auto; background: #ef4444; color: #fff; font-family: var(--mono); font-size: .52rem; padding: 1px 5px; border-radius: 10px; }
+.sidebar-footer { padding: 14px 16px; border-top: 1px solid rgba(255,255,255,.12); }
+.user-chip { display: flex; align-items: center; gap: 10px; }
+.avatar { width: 32px; height: 32px; background: rgba(255,255,255,.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: .68rem; color: #fff; border: 1.5px solid rgba(255,255,255,.3); }
+.user-info .name { font-size: .78rem; font-weight: 700; color: #fff; }
+.user-info .role { font-family: var(--mono); font-size: .57rem; color: rgba(255,255,255,.5); }
+
+/* MAIN */
+main{margin-left:216px;flex:1;display:flex;flex-direction:column}
+header{padding:16px 30px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface);position:sticky;top:0;z-index:10;box-shadow:0 1px 4px rgba(30,58,95,.06)}
+.page-title{font-size:1.05rem;font-weight:800}
+.page-date{font-family:var(--mono);font-size:.62rem;color:var(--text2);margin-top:2px}
+.tab-bar{display:flex;gap:4px}
+.tab{padding:6px 14px;border-radius:6px;font-size:.78rem;font-weight:600;cursor:pointer;color:var(--text2)}
+.tab.active{background:var(--b6);color:var(--b1)}
+.content{padding:26px 30px;flex:1}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:22px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 16px;transition:box-shadow .2s;animation:fadeUp .4s ease both}
+.kpi:hover{box-shadow:0 4px 16px rgba(30,58,95,.1)}
+.kpi:nth-child(1){animation-delay:.04s}.kpi:nth-child(2){animation-delay:.08s}.kpi:nth-child(3){animation-delay:.12s}.kpi:nth-child(4){animation-delay:.16s}.kpi:nth-child(5){animation-delay:.20s}
+.kpi-blue{border-top:3px solid var(--b1)}.kpi-green{border-top:3px solid var(--success)}.kpi-warn{border-top:3px solid var(--warn)}.kpi-danger{border-top:3px solid var(--danger)}
+.kpi-label{font-family:var(--mono);font-size:.58rem;color:var(--text2);letter-spacing:.07em;text-transform:uppercase}
+.kpi-value{font-size:1.55rem;font-weight:800;margin-top:6px;line-height:1}
+.up{color:var(--success)}.down{color:var(--danger)}.warn{color:var(--warn)}.blue{color:var(--b1)}
+
+/* BANNER */
+.section-banner{background:linear-gradient(135deg,#422006 0%,#92400e 55%,#d97706 100%);border-radius:12px;padding:20px 24px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;animation:fadeUp .4s ease both;animation-delay:.2s}
+.banner-left h2{font-size:1rem;font-weight:800;color:#fff;margin-bottom:3px}
+.banner-left p{font-family:var(--mono);font-size:.62rem;color:rgba(255,255,255,.65)}
+.banner-stats{display:flex;gap:28px}
+.b-stat-val{font-size:1.2rem;font-weight:800;color:#fff;line-height:1}
+.b-stat-lbl{font-family:var(--mono);font-size:.56rem;color:rgba(255,255,255,.6);margin-top:2px}
+.banner-divider{width:1px;background:rgba(255,255,255,.2);align-self:stretch}
+
+/* GRID */
+.row{display:grid;gap:14px;margin-bottom:14px}
+.r-3-2{grid-template-columns:3fr 2fr}
+.r-2-3{grid-template-columns:2fr 3fr}
+.r-3{grid-template-columns:1fr 1fr 1fr}
+.r-2{grid-template-columns:1fr 1fr}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;transition:box-shadow .2s;animation:fadeUp .4s ease both;animation-delay:.15s}
+.card:hover{box-shadow:0 4px 16px rgba(30,58,95,.08)}
+.card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
+.card-title{font-weight:800;font-size:.88rem}
+.card-sub{font-family:var(--mono);font-size:.58rem;color:var(--text2);margin-top:2px}
+
+/* FEED TABLE */
+.ft{width:100%;border-collapse:collapse}
+.ft th{font-family:var(--mono);font-size:.57rem;color:var(--text2);letter-spacing:.05em;text-transform:uppercase;text-align:left;padding:0 10px 10px 0;border-bottom:2px solid var(--border)}
+.ft td{padding:0 10px 0 0;height:46px;font-size:.78rem;border-bottom:1px solid var(--border);vertical-align:middle}
+.ft tbody tr:last-child td{border-bottom:none}
+.ft tbody tr:hover td{background:#fafbff}
+.cn{font-weight:700;font-size:.8rem;line-height:1.2}
+.cb{font-family:var(--mono);font-size:.56rem;color:var(--muted);display:block}
+
+/* STATUS PILLS */
+.pill{font-family:var(--mono);font-size:.55rem;padding:3px 8px;border-radius:4px;white-space:nowrap;display:inline-block}
+.p-ok{background:#f0fdf4;color:var(--success);border:1px solid #86efac}
+.p-warn{background:#fffbeb;color:var(--warn);border:1px solid #fcd34d}
+.p-over{background:#fef2f2;color:var(--danger);border:1px solid #fca5a5}
+
+/* RATIO BARS */
+.rb-row{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--border)}
+.rb-row:last-child{border-bottom:none}
+.rb-label{font-size:.77rem;font-weight:700;width:70px;flex-shrink:0}
+.rb-sub{font-family:var(--mono);font-size:.57rem;color:var(--text2);display:block;font-weight:400}
+.rb-track{flex:1;height:8px;background:var(--b6);border-radius:4px;overflow:hidden}
+.rb-fill{height:100%;border-radius:4px;background:var(--grad-h)}
+.rb-fill-w{background:linear-gradient(90deg,var(--warn),#fcd34d)}
+.rb-fill-d{background:linear-gradient(90deg,var(--danger),#fca5a5)}
+.rb-val{font-family:var(--mono);font-size:.7rem;font-weight:700;width:42px;text-align:right;flex-shrink:0}
+
+/* COST BREAKDOWN */
+.cb-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border)}
+.cb-row:last-child{border-bottom:none}
+.cb-name{font-size:.78rem;font-weight:700;flex:1}
+.cb-sub2{font-family:var(--mono);font-size:.57rem;color:var(--text2);display:block;font-weight:400}
+.cb-track{width:100px;height:7px;background:var(--b6);border-radius:4px;overflow:hidden;flex-shrink:0}
+.cb-fill{height:100%;border-radius:4px;background:var(--grad-h)}
+.cb-val{font-family:var(--mono);font-size:.72rem;font-weight:600;width:66px;text-align:right;flex-shrink:0}
+
+/* ANOMALY */
+.an-item{display:flex;gap:11px;padding:10px 0;border-bottom:1px solid var(--border);align-items:flex-start}
+.an-item:last-child{border-bottom:none}
+.an-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.78rem;flex-shrink:0;margin-top:1px;font-weight:800}
+.an-title{font-size:.78rem;font-weight:700}
+.an-desc{font-family:var(--mono);font-size:.6rem;color:var(--text2);margin-top:2px;line-height:1.45}
+.an-time{font-family:var(--mono);font-size:.56rem;color:var(--muted);margin-top:4px}
+
+/* STOCK TABLE */
+.st{width:100%;border-collapse:collapse}
+.st th{font-family:var(--mono);font-size:.57rem;color:var(--text2);letter-spacing:.05em;text-transform:uppercase;text-align:left;padding:0 10px 10px 0;border-bottom:2px solid var(--border)}
+.st td{padding:0 10px 0 0;height:44px;font-size:.78rem;border-bottom:1px solid var(--border);vertical-align:middle}
+.st tbody tr:last-child td{border-bottom:none}
+.st tbody tr:hover td{background:#fafbff}
+
+/* STOCK LEVEL BAR */
+.sl-track{width:80px;height:6px;background:var(--b6);border-radius:3px;overflow:hidden}
+.sl-fill{height:100%;border-radius:3px;background:var(--grad-h)}
+.sl-fill-w{background:linear-gradient(90deg,var(--warn),#fcd34d)}
+.sl-fill-d{background:linear-gradient(90deg,var(--danger),#fca5a5)}
+
+/* TABLE FOOTER */
+.tf{display:flex;gap:20px;padding:10px 0 0;margin-top:2px;border-top:2px solid var(--border);flex-wrap:wrap}
+.tfi{font-family:var(--mono);font-size:.6rem;color:var(--text2)}
+.tfi strong{color:var(--text)}
+
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--b5);border-radius:2px}
+</style>
+</head>
+<body>
+
+{% include 'index/sidebar.html' %}
+
+<main>
+  <header>
+    <div>
+      <div class="page-title">Feed & Inputs</div>
+      <div class="page-date" id="page-date">&nbsp;·&nbsp; Oruba Farm · 22 Cows</div>
+      <script>
+        const d=new Date();
+        const label=d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+        document.getElementById('page-date').insertAdjacentText('afterbegin',label);
+      </script>
+    </div>
+    <div class="tab-bar">
+      <div class="tab active">Today</div>
+      <div class="tab">This Week</div>
+      <div class="tab">This Month</div>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi kpi-blue">
+        <div class="kpi-label">Total Feed Given</div>
+        <div class="kpi-value blue">342 kg</div>
+      </div>
+      <div class="kpi kpi-blue">
+        <div class="kpi-label">Feed Cost — Today</div>
+        <div class="kpi-value blue">KSh 8,208</div>
+      </div>
+      <div class="kpi kpi-green">
+        <div class="kpi-label">Optimal Ratio Target</div>
+        <div class="kpi-value" style="color:var(--success)">1 : 2.2</div>
+      </div>
+      <div class="kpi kpi-warn">
+        <div class="kpi-label">Cows Over Feed Limit</div>
+        <div class="kpi-value" style="color:var(--warn)">2</div>
+      </div>
+      <div class="kpi kpi-danger">
+        <div class="kpi-label">Wasted Feed Cost</div>
+        <div class="kpi-value" style="color:var(--danger)">KSh 1,740</div>
+      </div>
+    </div>
+
+    <!-- BANNER -->
+    <div class="section-banner">
+      <div class="banner-left">
+        <h2>Feed Efficiency Summary — Today</h2>
+        <p>Daily feed vs. milk output · optimal ratio 1 kg feed → 2.2 L milk</p>
+      </div>
+      <div class="banner-stats">
+        <div><div class="b-stat-val">342 kg</div><div class="b-stat-lbl">Feed Distributed</div></div>
+        <div class="banner-divider"></div>
+        <div><div class="b-stat-val">248 L</div><div class="b-stat-lbl">Milk Produced</div></div>
+        <div class="banner-divider"></div>
+        <div><div class="b-stat-val">0.73</div><div class="b-stat-lbl">Actual Ratio</div></div>
+        <div class="banner-divider"></div>
+        <div><div class="b-stat-val" style="color:#fcd34d">−33%</div><div class="b-stat-lbl">Below Optimal</div></div>
+      </div>
+    </div>
+
+    <!-- ROW 1: Per-Cow Feed Table + Efficiency Bars -->
+    <div class="row r-3-2">
+
+      <!-- PER-COW FEED LOG TABLE -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Per-Cow Feed Log</div>
+            <div class="card-sub">Feed given · yield produced · cost · efficiency status</div>
+          </div>
+        </div>
+        <table class="ft">
+          <thead>
+            <tr>
+              <th>Cow</th>
+              <th>Feed (kg)</th>
+              <th>Yield (L)</th>
+              <th>Ratio</th>
+              <th>Feed Cost (KSh)</th>
+              <th>Revenue (KSh)</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><div class="cn">#C-001<span class="cb">Friesian · 4 yrs</span></div></td>
+              <td><span style="font-family:var(--mono)">18 kg</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--b1)">22.4 L</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--success)">1.24</span></td>
+              <td><span style="font-family:var(--mono)">432</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--success)">1,344</span></td>
+              <td><span class="pill p-ok">Optimal</span></td>
+            </tr>
+            <tr>
+              <td><div class="cn">#C-007<span class="cb">Friesian · 5 yrs</span></div></td>
+              <td><span style="font-family:var(--mono)">17 kg</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--b1)">19.8 L</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--success)">1.16</span></td>
+              <td><span style="font-family:var(--mono)">408</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--success)">1,188</span></td>
+              <td><span class="pill p-ok">Optimal</span></td>
+            </tr>
+            <tr>
+              <td><div class="cn">#C-003<span class="cb">Ayrshire · 3 yrs</span></div></td>
+              <td><span style="font-family:var(--mono)">16 kg</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--b1)">18.1 L</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--success)">1.13</span></td>
+              <td><span style="font-family:var(--mono)">384</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--success)">1,086</span></td>
+              <td><span class="pill p-ok">Optimal</span></td>
+            </tr>
+            <tr>
+              <td><div class="cn">#C-009<span class="cb">Friesian · 6 yrs</span></div></td>
+              <td><span style="font-family:var(--mono)">15 kg</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--b1)">17.3 L</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--success)">1.15</span></td>
+              <td><span style="font-family:var(--mono)">360</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--success)">1,038</span></td>
+              <td><span class="pill p-ok">Optimal</span></td>
+            </tr>
+            <tr>
+              <td><div class="cn">#C-021<span class="cb">Crossbreed · 4 yrs</span></div></td>
+              <td><span style="font-family:var(--mono)">16 kg</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--warn)">15.6 L</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--warn)">0.97</span></td>
+              <td><span style="font-family:var(--mono)">384</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--warn)">936</span></td>
+              <td><span class="pill p-warn">Watch</span></td>
+            </tr>
+            <tr>
+              <td><div class="cn">#C-014<span class="cb">Friesian · 7 yrs</span></div></td>
+              <td><span style="font-family:var(--mono)">18 kg</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--danger)">11.2 L</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--danger)">0.62</span></td>
+              <td><span style="font-family:var(--mono)">432</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--danger)">672</span></td>
+              <td><span class="pill p-over">Over-fed</span></td>
+            </tr>
+            <tr>
+              <td><div class="cn">#C-018<span class="cb">Ayrshire · 8 yrs</span></div></td>
+              <td><span style="font-family:var(--mono)">18 kg</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--danger)">9.0 L</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--danger)">0.50</span></td>
+              <td><span style="font-family:var(--mono)">432</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--danger)">540</span></td>
+              <td><span class="pill p-over">Over-fed</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="tf">
+          <span class="tfi"><strong>342 kg</strong> total feed</span>
+          <span class="tfi"><strong>KSh 8,208</strong> feed cost</span>
+          <span class="tfi" style="color:var(--danger)"><strong>2 cows</strong> over limit</span>
+          <span class="tfi" style="color:var(--warn)"><strong>1 cow</strong> watch</span>
+        </div>
+      </div>
+
+      <!-- FEED-TO-MILK RATIO BARS -->
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Feed-to-Milk Efficiency</div>
+              <div class="card-sub">Actual ratio vs. optimal 1 : 2.2 target</div>
+            </div>
+          </div>
+          <div class="rb-row">
+            <div class="rb-label">#C-001<span class="rb-sub">18kg→22.4L</span></div>
+            <div class="rb-track"><div class="rb-fill" style="width:88%"></div></div>
+            <div class="rb-val up">88%</div>
+          </div>
+          <div class="rb-row">
+            <div class="rb-label">#C-007<span class="rb-sub">17kg→19.8L</span></div>
+            <div class="rb-track"><div class="rb-fill" style="width:76%"></div></div>
+            <div class="rb-val up">76%</div>
+          </div>
+          <div class="rb-row">
+            <div class="rb-label">#C-003<span class="rb-sub">16kg→18.1L</span></div>
+            <div class="rb-track"><div class="rb-fill" style="width:72%"></div></div>
+            <div class="rb-val up">72%</div>
+          </div>
+          <div class="rb-row">
+            <div class="rb-label">#C-009<span class="rb-sub">15kg→17.3L</span></div>
+            <div class="rb-track"><div class="rb-fill" style="width:70%"></div></div>
+            <div class="rb-val up">70%</div>
+          </div>
+          <div class="rb-row">
+            <div class="rb-label">#C-021<span class="rb-sub">16kg→15.6L</span></div>
+            <div class="rb-track"><div class="rb-fill rb-fill-w" style="width:56%"></div></div>
+            <div class="rb-val warn">56%</div>
+          </div>
+          <div class="rb-row">
+            <div class="rb-label">#C-014<span class="rb-sub">18kg→11.2L</span></div>
+            <div class="rb-track"><div class="rb-fill rb-fill-d" style="width:30%"></div></div>
+            <div class="rb-val down">30%</div>
+          </div>
+          <div class="rb-row">
+            <div class="rb-label">#C-018<span class="rb-sub">18kg→9.0L</span></div>
+            <div class="rb-track"><div class="rb-fill rb-fill-d" style="width:23%"></div></div>
+            <div class="rb-val down">23%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 2: Feed Cost Breakdown + Stock Levels + Anomalies -->
+    <div class="row r-3">
+
+      <!-- FEED COST BREAKDOWN BY TYPE -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Feed Cost Breakdown</div>
+            <div class="card-sub">Daily spend by input type · KSh</div>
+          </div>
+        </div>
+        <div class="cb-row">
+          <div class="cb-name">Dairy Meal<span class="cb-sub2">High protein concentrate · 120 kg</span></div>
+          <div class="cb-track"><div class="cb-fill" style="width:85%"></div></div>
+          <div class="cb-val blue">KSh 3,600</div>
+        </div>
+        <div class="cb-row">
+          <div class="cb-name">Napier Grass<span class="cb-sub2">Roughage · 140 kg</span></div>
+          <div class="cb-track"><div class="cb-fill" style="width:55%"></div></div>
+          <div class="cb-val blue">KSh 2,100</div>
+        </div>
+        <div class="cb-row">
+          <div class="cb-name">Silage<span class="cb-sub2">Fermented fodder · 60 kg</span></div>
+          <div class="cb-track"><div class="cb-fill" style="width:40%"></div></div>
+          <div class="cb-val blue">KSh 1,440</div>
+        </div>
+        <div class="cb-row">
+          <div class="cb-name">Mineral Supplements<span class="cb-sub2">Salts & vitamins · 12 kg</span></div>
+          <div class="cb-track"><div class="cb-fill" style="width:18%"></div></div>
+          <div class="cb-val blue">KSh 600</div>
+        </div>
+        <div class="cb-row">
+          <div class="cb-name">Water Treatment<span class="cb-sub2">Troughs · daily dosing</span></div>
+          <div class="cb-track"><div class="cb-fill" style="width:6%"></div></div>
+          <div class="cb-val blue">KSh 168</div>
+        </div>
+        <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);display:flex;justify-content:space-between">
+          <div>
+            <div style="font-family:var(--mono);font-size:.57rem;color:var(--text2);text-transform:uppercase;letter-spacing:.06em">Total Feed Cost</div> 
+            <div style="font-size:1.05rem;font-weight:800;color:var(--b1);margin-top:3px">KSh 7,908</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-family:var(--mono);font-size:.57rem;color:var(--text2);text-transform:uppercase;letter-spacing:.06em">Wasted (Over-fed)</div>
+            <div style="font-size:1.05rem;font-weight:800;color:var(--danger);margin-top:3px">KSh 1,740</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FEED STOCK LEVELS -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Feed Stock Levels</div>
+            <div class="card-sub">Current inventory · days remaining at today's rate</div>
+          </div>
+        </div>
+        <table class="st">
+          <thead>
+            <tr>
+              <th>Input</th>
+              <th>In Stock</th>
+              <th>Days Left</th>
+              <th>Level</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span style="font-weight:700;font-size:.78rem">Dairy Meal</span></td>
+              <td><span style="font-family:var(--mono)">480 kg</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--b1)">4 days</span></td>
+              <td><div class="sl-track"><div class="sl-fill sl-fill-w" style="width:32%"></div></div></td>
+            </tr>
+            <tr>
+              <td><span style="font-weight:700;font-size:.78rem">Napier Grass</span></td>
+              <td><span style="font-family:var(--mono)">1,400 kg</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--success)">10 days</span></td>
+              <td><div class="sl-track"><div class="sl-fill" style="width:72%"></div></div></td>
+            </tr>
+            <tr>
+              <td><span style="font-weight:700;font-size:.78rem">Silage</span></td>
+              <td><span style="font-family:var(--mono)">300 kg</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--success)">5 days</span></td>
+              <td><div class="sl-track"><div class="sl-fill" style="width:50%"></div></div></td>
+            </tr>
+            <tr>
+              <td><span style="font-weight:700;font-size:.78rem">Mineral Supplements</span></td>
+              <td><span style="font-family:var(--mono)">24 kg</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--danger)">2 days</span></td>
+              <td><div class="sl-track"><div class="sl-fill sl-fill-d" style="width:15%"></div></div></td>
+            </tr>
+            <tr>
+              <td><span style="font-weight:700;font-size:.78rem">Water Treatment</span></td>
+              <td><span style="font-family:var(--mono)">2.4 L</span></td>
+              <td><span style="font-family:var(--mono);font-weight:700;color:var(--warn)">14 days</span></td>
+              <td><div class="sl-track"><div class="sl-fill" style="width:60%"></div></div></td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);font-family:var(--mono);font-size:.6rem;color:var(--danger)">    
+          ⚠ Mineral Supplements critically low — reorder within 24hrs
+        </div>
+        <div style="margin-top:6px;font-family:var(--mono);font-size:.6rem;color:var(--warn)">
+          ⚠ Dairy Meal at 4-day supply — reorder before end of week
+        </div>
+      </div>
+
+      <!-- FEED ANOMALY ALERTS -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Feed Anomaly Alerts</div>
+            <div class="card-sub">Cows exceeding optimal feed limit · ROI impact</div>
+          </div>
+        </div>
+
+        <div class="an-item">
+          <div class="an-icon" style="background:#fef2f2;color:var(--danger)">!</div>
+          <div>
+            <div class="an-title">#C-014 — Diminishing Return Threshold Crossed</div>
+            <div class="an-desc">18 kg fed today, only 11.2L produced. Ratio 0.62 — well below the 2.2 optimal. Feed cost KSh 432 against revenue KSh 672. Reduce daily allocation to 14 kg.</div>
+            <div class="an-time">Today · AM Session</div>
+          </div>
+        </div>
+
+        <div class="an-item">
+          <div class="an-icon" style="background:#fef2f2;color:var(--danger)">!</div>
+          <div>
+            <div class="an-title">#C-018 — Severe Feed Inefficiency</div>
+            <div class="an-desc">18 kg fed, only 9.0L produced. Ratio 0.50 — worst in herd. At 8 years this cow may be approaching end of productive life. Flag for management review.</div>
+            <div class="an-time">Today · AM Session</div>
+          </div>
+        </div>
+
+        <div class="an-item">
+          <div class="an-icon" style="background:#fffbeb;color:var(--warn)">~</div>
+          <div>
+            <div class="an-title">#C-021 — Below Target Ratio</div>
+            <div class="an-desc">Ratio 0.97 on 16 kg feed. Yield acceptable at 15.6L but trending down over 5 days. Monitor closely before classifying as over-fed.</div>
+            <div class="an-time">Today · Trending</div>
+          </div>
+        </div>
+
+        <div class="an-item">
+          <div class="an-icon" style="background:#fef2f2;color:var(--danger)">▼</div>
+          <div>
+            <div class="an-title">Mineral Supplements — Critical Stock</div>
+            <div class="an-desc">Only 2 days of mineral supplements remaining at current daily usage of 12 kg. Deficiency directly impacts milk quality and cow health.</div>
+            <div class="an-time">Stock Alert · Reorder Now</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>GODE · M-Pesa Ledger</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f4fb;--surface:#fff;--b6:#e8f1fc;--border:#d6e0f0;
+  --b1:#1e3a5f;--b2:#2563a8;--b3:#4a90d9;--b4:#7eb8f7;--b5:#b3d4f7;
+  --success:#2d6a2f;--warn:#d97706;--danger:#dc2626;
+  --mpesa:#4caf50;--mpesa-light:#e8f5e9;--mpesa-dark:#2e7d32;
+  --text:#0f172a;--text2:#64748b;--muted:#94a3b8;
+  --sans:'Plus Jakarta Sans',sans-serif;--mono:'IBM Plex Mono',monospace;
+  --grad-h:linear-gradient(90deg,#1e3a5f 0%,#4a90d9 100%);
+  --grad-mpesa:linear-gradient(90deg,#2e7d32 0%,#4caf50 100%);
+}
+html{font-size:13.5px}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;display:flex}
+
+/* SIDEBAR */
+aside { width: 216px; min-height: 100vh; background: var(--b1); display: flex; flex-direction: column; position: fixed; left:0;top:0;bottom:0; z-index:100; }
+.logo { padding: 26px 20px 18px; border-bottom: 1px solid rgba(255,255,255,.12); }
+.logo-mark { font-weight: 800; font-size: 1.35rem; letter-spacing: -.5px; color: #fff; }
+.logo-sub { font-family: var(--mono); font-size: .58rem; color: rgba(255,255,255,.5); letter-spacing: .1em; margin-top: 3px; }
+nav { padding: 14px 10px; flex: 1; }
+.nav-label { font-family: var(--mono); font-size: .57rem; color: rgba(255,255,255,.4); letter-spacing: .12em; text-transform: uppercase; padding: 12px 10px 5px; }
+.nav-item { display: flex; align-items: center; gap: 9px; padding: 8px 12px; border-radius: 7px; cursor: pointer; color: rgba(255,255,255,.65); font-size: .8rem; font-weight: 600; transition: all .15s; margin-bottom: 1px; }
+.nav-item:hover { background: rgba(255,255,255,.1); color: #fff; }
+.nav-item.active { background: rgba(255,255,255,.18); color: #fff; }
+.nav-icon { width: 15px; height: 15px; flex-shrink: 0; }
+.badge { margin-left: auto; background: #ef4444; color: #fff; font-family: var(--mono); font-size: .52rem; padding: 1px 5px; border-radius: 10px; }
+.sidebar-footer { padding: 14px 16px; border-top: 1px solid rgba(255,255,255,.12); }
+.user-chip { display: flex; align-items: center; gap: 10px; }
+.avatar { width: 32px; height: 32px; background: rgba(255,255,255,.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: .68rem; color: #fff; border: 1.5px solid rgba(255,255,255,.3); }
+.user-info .name { font-size: .78rem; font-weight: 700; color: #fff; }
+.user-info .role { font-family: var(--mono); font-size: .57rem; color: rgba(255,255,255,.5); }
+
+/* —— MAIN —— */
+main{margin-left:216px;flex:1;display:flex;flex-direction:column}
+header{padding:16px 30px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface);position:sticky;top:0;z-index:10;box-shadow:0 1px 4px rgba(30,58,95,.06)}
+.page-title{font-size:1.05rem;font-weight:800}
+.page-date{font-family:var(--mono);font-size:.62rem;color:var(--text2);margin-top:2px}
+.header-actions{display:flex;align-items:center;gap:10px}
+.btn{padding:7px 14px;border-radius:7px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:var(--sans);font-size:.76rem;font-weight:600;cursor:pointer}
+.btn-primary{background:var(--b1);color:#fff;border-color:var(--b1)}
+.btn-mpesa{background:var(--mpesa-dark);color:#fff;border-color:var(--mpesa-dark)}
+.tab-bar{display:flex;gap:4px}
+.tab{padding:6px 14px;border-radius:6px;font-size:.78rem;font-weight:600;cursor:pointer;color:var(--text2)}
+.tab.active{background:var(--b6);color:var(--b1)}
+.content{padding:26px 30px;flex:1}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* —— KPI —— */
+.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:22px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 16px;transition:box-shadow .2s;animation:fadeUp .4s ease both}
+.kpi:hover{box-shadow:0 4px 16px rgba(30,58,95,.1)}
+.kpi:nth-child(1){animation-delay:.04s}.kpi:nth-child(2){animation-delay:.08s}.kpi:nth-child(3){animation-delay:.12s}.kpi:nth-child(4){animation-delay:.16s}.kpi:nth-child(5){animation-delay:.20s}
+.kpi-blue{border-top:3px solid var(--b1)}.kpi-green{border-top:3px solid var(--mpesa)}.kpi-warn{border-top:3px solid var(--warn)}.kpi-danger{border-top:3px solid var(--danger)}
+.kpi-label{font-family:var(--mono);font-size:.58rem;color:var(--text2);letter-spacing:.07em;text-transform:uppercase}
+.kpi-value{font-size:1.55rem;font-weight:800;margin:6px 0 4px;line-height:1}
+.kpi-change{font-family:var(--mono);font-size:.62rem;display:flex;align-items:center;gap:4px}
+.up{color:var(--success)}.down{color:var(--danger)}.warn{color:var(--warn)}.blue{color:var(--b1)}
+
+/* —— BANNER —— */
+.section-banner{
+  background:linear-gradient(135deg,#1b5e20 0%,#2e7d32 50%,#43a047 100%);
+  border-radius:12px;padding:20px 24px;margin-bottom:16px;
+  display:flex;align-items:center;justify-content:space-between;
+  animation:fadeUp .4s ease both;animation-delay:.2s;
+}
+.banner-left h2{font-size:1rem;font-weight:800;color:#fff;margin-bottom:3px}
+.banner-left p{font-family:var(--mono);font-size:.62rem;color:rgba(255,255,255,.65)}
+.banner-stats{display:flex;gap:28px}
+.b-stat-val{font-size:1.2rem;font-weight:800;color:#fff;line-height:1}
+.b-stat-lbl{font-family:var(--mono);font-size:.56rem;color:rgba(255,255,255,.6);margin-top:2px}
+.banner-divider{width:1px;background:rgba(255,255,255,.2);align-self:stretch}
+
+/* —— CARD —— */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;transition:box-shadow .2s;animation:fadeUp .4s ease both;animation-delay:.2s}
+.card:hover{box-shadow:0 4px 16px rgba(30,58,95,.08)}
+.card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
+.card-title{font-weight:800;font-size:.88rem}
+.card-sub{font-family:var(--mono);font-size:.58rem;color:var(--text2);margin-top:2px}
+.tag{font-family:var(--mono);font-size:.56rem;padding:3px 8px;border-radius:5px;border:1px solid var(--border);color:var(--text2);background:var(--bg);white-space:nowrap}
+.tag-blue{border-color:var(--b4);color:var(--b1);background:var(--b6)}
+.tag-green{border-color:#86efac;color:var(--success);background:#f0fdf4}
+.tag-mpesa{border-color:#a5d6a7;color:var(--mpesa-dark);background:var(--mpesa-light)}
+.tag-warn{border-color:#fcd34d;color:var(--warn);background:#fffbeb}
+.tag-red{border-color:#fca5a5;color:var(--danger);background:#fef2f2}
+
+/* —— GRID —— */
+.row{display:grid;gap:14px;margin-bottom:14px}
+.row-3-2{grid-template-columns:3fr 2fr}
+.row-2-3{grid-template-columns:2fr 3fr}
+.row-3{grid-template-columns:1fr 1fr 1fr}
+.row-2{grid-template-columns:1fr 1fr}
+
+/* —— LEDGER TABLE —— */
+.ledger-table{width:100%;border-collapse:collapse}
+.ledger-table th{
+  font-family:var(--mono);font-size:.57rem;color:var(--text2);
+  letter-spacing:.05em;text-transform:uppercase;
+  text-align:left;padding:0 10px 10px 0;
+  border-bottom:2px solid var(--border);
+}
+.ledger-table td{
+  padding:0 10px 0 0;height:46px;font-size:.78rem;
+  border-bottom:1px solid var(--border);vertical-align:middle;
+}
+.ledger-table tbody tr:last-child td{border-bottom:none}
+.ledger-table tbody tr:hover td{background:#fafbff}
+
+/* transaction type icons */
+.tx-icon{
+  width:30px;height:30px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.78rem;flex-shrink:0;
+}
+.tx-cell{display:flex;align-items:center;gap:9px}
+.tx-name{font-weight:700;font-size:.8rem;line-height:1.2}
+.tx-ref{font-family:var(--mono);font-size:.56rem;color:var(--muted);display:block}
+
+/* amount cells */
+.amount-in{font-family:var(--mono);font-weight:700;color:var(--mpesa-dark)}
+.amount-out{font-family:var(--mono);font-weight:700;color:var(--danger)}
+.amount-neutral{font-family:var(--mono);font-weight:600;color:var(--text2)}
+.balance-val{font-family:var(--mono);font-size:.78rem;font-weight:600}
+
+/* status pills */
+.pill{font-family:var(--mono);font-size:.55rem;padding:3px 8px;border-radius:4px;white-space:nowrap;display:inline-block}
+.pill-confirmed{background:var(--mpesa-light);color:var(--mpesa-dark);border:1px solid #a5d6a7}
+.pill-pending{background:#fffbeb;color:var(--warn);border:1px solid #fcd34d}
+.pill-failed{background:#fef2f2;color:var(--danger);border:1px solid #fca5a5}
+.pill-reconciled{background:var(--b6);color:var(--b1);border:1px solid var(--b4)}
+
+/* table footer */
+.table-footer{display:flex;gap:24px;padding:12px 0 0;margin-top:2px;border-top:2px solid var(--border);flex-wrap:wrap}
+.tf-item{font-family:var(--mono);font-size:.6rem;color:var(--text2)}
+.tf-item strong{color:var(--text)}
+
+/* —— RECONCILIATION BARS —— */
+.recon-row{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--border)}
+.recon-row:last-child{border-bottom:none}
+.recon-label{font-size:.77rem;font-weight:700;flex:1;line-height:1.2}
+.recon-sub{font-family:var(--mono);font-size:.58rem;color:var(--text2);display:block;font-weight:400}
+.recon-track{width:110px;height:7px;background:var(--b6);border-radius:4px;overflow:hidden;flex-shrink:0}
+.recon-fill{height:100%;border-radius:4px;background:var(--grad-mpesa)}
+.recon-fill-warn{background:linear-gradient(90deg,var(--warn),#fcd34d)}
+.recon-fill-danger{background:linear-gradient(90deg,var(--danger),#fca5a5)}
+.recon-val{font-family:var(--mono);font-size:.68rem;width:42px;text-align:right;flex-shrink:0}
+
+/* —— CHANNEL SPLIT —— */
+.channel-row{display:flex;align-items:center;gap:12px;margin-bottom:11px}
+.channel-row:last-child{margin-bottom:0}
+.channel-name{font-size:.77rem;font-weight:700;width:130px;flex-shrink:0;line-height:1.2}
+.channel-sub{font-family:var(--mono);font-size:.56rem;color:var(--muted);display:block;font-weight:400}
+.progress-track{flex:1;height:7px;background:var(--b6);border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;border-radius:4px;background:var(--grad-mpesa)}
+.channel-amount{font-family:var(--mono);font-size:.7rem;font-weight:500;text-align:right;width:62px;flex-shrink:0}
+
+/* —— DAILY FLOW BARS —— */
+.flow-bars{display:flex;gap:8px;align-items:flex-end;height:100px}
+.bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
+.bar-track{width:100%;background:var(--b6);border-radius:5px;flex:1;display:flex;align-items:flex-end;overflow:hidden}
+.bar-fill{width:100%;border-radius:5px;background:var(--grad-mpesa)}
+.bar-label{font-family:var(--mono);font-size:.54rem;color:var(--text2)}
+.bar-val{font-family:var(--mono);font-size:.54rem;color:var(--mpesa-dark);font-weight:500}
+
+/* —— ALERT BOX —— */
+.alert-box{background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:10px 14px;margin-top:10px}
+.alert-box .a-label{font-family:var(--mono);font-size:.57rem;color:var(--warn);letter-spacing:.06em;text-transform:uppercase}
+.alert-box .a-text{font-size:.75rem;margin-top:4px;line-height:1.5}
+.alert-box-green{background:var(--mpesa-light);border-color:#a5d6a7}
+.alert-box-green .a-label{color:var(--mpesa-dark)}
+
+/* —— SUMMARY TOTALS —— */
+.totals-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:2px}
+.total-box{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+.total-box-in{border-left:3px solid var(--mpesa)}
+.total-box-out{border-left:3px solid var(--danger)}
+.total-lbl{font-family:var(--mono);font-size:.57rem;color:var(--text2);letter-spacing:.07em;text-transform:uppercase}
+.total-val{font-size:1.2rem;font-weight:800;margin-top:5px;line-height:1}
+.total-count{font-family:var(--mono);font-size:.6rem;color:var(--muted);margin-top:3px}
+
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:var(--b5);border-radius:2px}
+</style>
+</head>
+<body>
+
+{% include 'index/sidebar.html' %}
+
+<!-- MAIN -->
+<main>
+  <header>
+    <div>
+      <div class="page-title">M-Pesa Ledger</div>
+      <div class="page-date">Wednesday, 11 June 2025 &nbsp;·&nbsp; Petro Shop · Wholesale · Farm Gate</div>
+    </div>
+    <div class="header-actions">
+      <div class="tab-bar">
+        <div class="tab active">Today</div>
+        <div class="tab">This Week</div>
+        <div class="tab">This Month</div>
+      </div>
+      <button class="btn">Export CSV</button>
+      <button class="btn btn-mpesa">+ Record Payment</button>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi kpi-green">
+        <div class="kpi-label">Total Received — Today</div>
+        <div class="kpi-value" style="color:var(--mpesa-dark)">KSh 18,240</div>
+        <div class="kpi-change up">↑ KSh 2,100 vs yesterday</div>
+      </div>
+      <div class="kpi kpi-blue">
+        <div class="kpi-label">Total Payments Out</div>
+        <div class="kpi-value blue">KSh 4,780</div>
+        <div class="kpi-change" style="color:var(--text2)">Feed · Vet · Supplier</div>
+      </div>
+      <div class="kpi kpi-green">
+        <div class="kpi-label">Net Cash Flow</div>
+        <div class="kpi-value" style="color:var(--mpesa-dark)">KSh 13,460</div>
+        <div class="kpi-change up">↑ Positive · On target</div>
+      </div>
+      <div class="kpi kpi-warn">
+        <div class="kpi-label">Pending Reconciliation</div>
+        <div class="kpi-value" style="color:var(--warn)">KSh 1,200</div>
+        <div class="kpi-change warn">⚠ 2 transactions unmatched</div>
+      </div>
+      <div class="kpi kpi-blue">
+        <div class="kpi-label">Transactions — Today</div>
+        <div class="kpi-value blue">34</div>
+        <div class="kpi-change up">↑ +8 vs avg day</div>
+      </div>
+    </div>
+
+    <!-- M-PESA BANNER -->
+    <div class="section-banner">
+      <div class="banner-left">
+        <h2>🟢 M-Pesa Reconciliation Status</h2>
+        <p>Automated daily balance · Petro Shop + Wholesale + Farm Gate channels</p>
+      </div>
+      <div class="banner-stats">
+        <div>
+          <div class="b-stat-val">96.5%</div>
+          <div class="b-stat-lbl">Reconciled Today</div>
+        </div>
+        <div class="banner-divider"></div>
+        <div>
+          <div class="b-stat-val">KSh 18,240</div>
+          <div class="b-stat-lbl">M-Pesa Inflows</div>
+        </div>
+        <div class="banner-divider"></div>
+        <div>
+          <div class="b-stat-val">KSh 17,990</div>
+          <div class="b-stat-lbl">Confirmed vs Stock</div>
+        </div>
+        <div class="banner-divider"></div>
+        <div>
+          <div class="b-stat-val" style="color:#ffcc80">KSh 250</div>
+          <div class="b-stat-lbl">Variance Gap</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 1: Ledger Table + Reconciliation -->
+    <div class="row row-3-2">
+
+      <!-- MAIN LEDGER TABLE -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Daily M-Pesa Transaction Ledger</div>
+            <div class="card-sub">All inflows and outflows · auto-matched to stock records</div>
+          </div>
+          <span class="tag tag-mpesa">Live · 34 Transactions</span>
+        </div>
+        <table class="ledger-table">
+          <thead>
+            <tr>
+              <th>Transaction</th>
+              <th>M-Pesa Code</th>
+              <th>Channel</th>
+              <th>Inflow (KSh)</th>
+              <th>Outflow (KSh)</th>
+              <th>Balance (KSh)</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="tx-cell">
+                  <div class="tx-icon" style="background:var(--mpesa-light);color:var(--mpesa-dark)">↓</div>
+                  <div>
+                    <div class="tx-name">Vanilla Yoghurt 250ml × 6</div>
+                    <div class="tx-ref">QHK7A2P3 · YOG-VAN-250</div>
+                  </div>
+                </div>
+              </td>
+              <td><span style="font-family:var(--mono);font-size:.72rem;color:var(--b1);font-weight:600;letter-spacing:.04em">QHK7A2P3</span></td>       
+              <td><span style="font-family:var(--mono);font-size:.72rem;color:var(--b1)">Petro Shop</span></td>
+              <td><span class="amount-in">+720</span></td>
+              <td><span class="amount-neutral">—</span></td>
+              <td><span class="balance-val">18,240</span></td>
+              <td><span class="pill pill-confirmed">Confirmed</span></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="tx-cell">
+                  <div class="tx-icon" style="background:var(--mpesa-light);color:var(--mpesa-dark)">↓</div>
+                  <div>
+                    <div class="tx-name">Raw Honey 500g × 2</div>
+                    <div class="tx-ref">QHK8B1C4 · HON-500</div>
+                  </div>
+                </div>
+              </td>
+              <td><span style="font-family:var(--mono);font-size:.72rem;color:var(--b1);font-weight:600;letter-spacing:.04em">QHK8B1C4</span></td>       
+              <td><span style="font-family:var(--mono);font-size:.72rem;color:var(--b1)">Petro Shop</span></td>
+              <td><span class="amount-in">+900</span></td>
+              <td><span class="amount-neutral">—</span></td>
+              <td><span class="balance-val">17,520</span></td>
+              <td><span class="pill pill-confirmed">Confirmed</span></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="tx-cell">
+                  <div class="tx-icon" style="background:#fef2f2;color:var(--danger)">↑</div>
+                  <div>
+                    <div class="tx-name">Feed Supplier — AgroMills</div>
+                    <div class="tx-ref">QHK9D2E5 · FEED-PAYMENT</div>
+                  </div>
+                </div>
+              </td>
+              <td><span style="font-family:var(--mono);font-size:.72rem;color:var(--b1);font-weight:600;letter-spacing:.04em">QHK9D2E5</span></td>       
+              <td><span style="font-family:var(--mono);font-size:.72rem;color:var(--text2)">Farm Gate</span></td>
+              <td><span class="amount-neutral">—</span></td>
+              <td><span class="amount-out">−2,400</span></td>
+              <td><span class="balance-val">16,620</span></td>
+              <td><span class="pill pill-confirmed">Confirmed</span></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="tx-cell">
+                  <div class="tx-icon" style="background:var(--mpesa-light);color:var(--mpesa-dark)">↓</div>
+                  <div>
+                    <div class="tx-name">Mala 500ml × 12 — Wholesale</div>
+                    <div class="tx-ref">QHK0F3G6 · MAL-500</div>
+                  </div>
+                </div>
+              </td>
+              <td><span style="font-family:var(--mono);font-size:.72rem;color:var(--b1);font-weight:600;letter-spacing:.04em">QHK0F3G6</span></td>
+              <td><span style="font-family:var(--mono);font-size:.72rem;color:var(--b2)">Wholesale</span></td>
+              <td><span class="amount-in">+1,440</span></td>
+              <td><span class="amount-neutral">—</span></td>
+              <td><span class="balance-val">18,060</span></td>
+              <td><span class="pill pill-confirmed">Confirmed</span></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="tx-cell">
+                  <div class="tx-icon" style="background:#fffbeb;color:var(--warn)">⚠</div>
+                  <div>
+                    <div class="tx-name">Strawberry Yoghurt × 4</div>
+                    <div class="tx-ref">QHK1H4I7 · YOG-STR-250</div>
+                  </div>
+                </div>
+              </td>
+              <td><span style="font-family:var(--mono);font-size:.72rem;color:var(--b1);font-weight:600;letter-spacing:.04em">QHK1H4I7</span></td>
+              <td><span style="font-family:var(--mono);font-size:.72rem;color:var(--b1)">Petro Shop</span></td>
+              <td><span class="amount-in">+480</span></td>
+              <td><span class="amount-neutral">—</span></td>
+              <td><span class="balance-val">18,540</span></td>
+              <td><span class="pill pill-pending">Pending</span></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="tx-cell">
+                  <div class="tx-icon" style="background:#fef2f2;color:var(--danger)">↑</div>
+                  <div>
+                    <div class="tx-name">Vet Dr. Kamau — Consultation</div>
+                    <div class="tx-ref">QHK2J5K8 · VET-VISIT</div>
+                  </div>
+                </div>
+              </td>
+              <td><span style="font-family:var(--mono);font-size:.72rem;color:var(--b1);font-weight:600;letter-spacing:.04em">QHK2J5K8</span></td>       
+              <td><span style="font-family:var(--mono);font-size:.72rem;color:var(--text2)">Farm Gate</span></td>
+              <td><span class="amount-neutral">—</span></td>
+              <td><span class="amount-out">−1,500</span></td>
+              <td><span class="balance-val">17,040</span></td>
+              <td><span class="pill pill-confirmed">Confirmed</span></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="tx-cell">
+                  <div class="tx-icon" style="background:var(--mpesa-light);color:var(--mpesa-dark)">↓</div>
+                  <div>
+                    <div class="tx-name">Mala 1L × 8 — Wholesale</div>
+                    <div class="tx-ref">QHK3L6M9 · MAL-1L</div>
+                  </div>
+                </div>
+              </td>
+              <td><span style="font-family:var(--mono);font-size:.72rem;color:var(--b1);font-weight:600;letter-spacing:.04em">QHK3L6M9</span></td>       
+              <td><span style="font-family:var(--mono);font-size:.72rem;color:var(--b2)">Wholesale</span></td>
+              <td><span class="amount-in">+1,360</span></td>
+              <td><span class="amount-neutral">—</span></td>
+              <td><span class="balance-val">18,400</span></td>
+              <td><span class="pill pill-reconciled">Reconciled</span></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="tx-cell">
+                  <div class="tx-icon" style="background:#fffbeb;color:var(--warn)">⚠</div>
+                  <div>
+                    <div class="tx-name">Unknown Customer Payment</div>
+                    <div class="tx-ref">QHK4N7O0 · UNMATCHED</div>
+                  </div>
+                </div>
+              </td>
+              <td><span style="font-family:var(--mono);font-size:.72rem;color:var(--warn);font-weight:600;letter-spacing:.04em">QHK4N7O0</span></td>     
+              <td><span style="font-family:var(--mono);font-size:.72rem;color:var(--warn)">Unknown</span></td>
+              <td><span class="amount-in">+750</span></td>
+              <td><span class="amount-neutral">—</span></td>
+              <td><span class="balance-val">19,150</span></td>
+              <td><span class="pill pill-pending">Pending</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="table-footer">
+          <span class="tf-item"><strong>34</strong> transactions today</span>
+          <span class="tf-item"><strong>KSh 18,240</strong> total inflows</span>
+          <span class="tf-item"><strong>KSh 4,780</strong> total outflows</span>
+          <span class="tf-item" style="color:var(--warn)"><strong>2</strong> pending match</span>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: Summary + Reconciliation -->
+      <div style="display:flex;flex-direction:column;gap:14px">
+
+        <!-- Inflow / Outflow Totals -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Today's Summary</div>
+              <div class="card-sub">Total cash movement · all channels</div>
+            </div>
+            <span class="tag tag-mpesa">Auto-tallied</span>
+          </div>
+          <div class="totals-grid">
+            <div class="total-box total-box-in">
+              <div class="total-lbl">Total In</div>
+              <div class="total-val" style="color:var(--mpesa-dark)">KSh 18,240</div>
+              <div class="total-count">28 payments received</div>
+            </div>
+            <div class="total-box total-box-out">
+              <div class="total-lbl">Total Out</div>
+              <div class="total-val" style="color:var(--danger)">KSh 4,780</div>
+              <div class="total-count">6 payments made</div>
+            </div>
+          </div>
+          <div class="alert-box alert-box-green" style="margin-top:12px">
+            <div class="a-label">Net Position</div>
+            <div class="a-text" style="font-weight:700;font-size:.9rem;color:var(--mpesa-dark)">+KSh 13,460 &nbsp;·&nbsp; Positive Cash Flow</div>      
+          </div>
+        </div>
+
+        <!-- Channel Breakdown -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Revenue by Channel</div>
+              <div class="card-sub">M-Pesa inflows per sales point</div>
+            </div>
+            <span class="tag tag-blue">Today</span>
+          </div>
+          <div class="channel-row">
+            <div class="channel-name">Petro Shop<span class="channel-sub">MPESA Till: 247801</span></div>
+            <div class="progress-track"><div class="progress-fill" style="width:72%"></div></div>
+            <div class="channel-amount up">KSh 9,420</div>
+          </div>
+          <div class="channel-row">
+            <div class="channel-name">Wholesale<span class="channel-sub">MPESA Till: 247802</span></div>
+            <div class="progress-track"><div class="progress-fill" style="width:54%"></div></div>
+            <div class="channel-amount up">KSh 6,200</div>
+          </div>
+          <div class="channel-row">
+            <div class="channel-name">Farm Gate<span class="channel-sub">Personal No.</span></div>
+            <div class="progress-track"><div class="progress-fill" style="width:22%"></div></div>
+            <div class="channel-amount warn">KSh 2,620</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ROW 2: Daily Flow Chart + Reconciliation Status + Alerts -->
+    <div class="row row-3">
+
+      <!-- 7-Day M-Pesa Flow -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">7-Day M-Pesa Inflow</div>
+            <div class="card-sub">Daily revenue received · KSh</div>
+          </div>
+          <span class="tag tag-mpesa">Week view</span>
+        </div>
+        <div class="flow-bars">
+          <div class="bar-wrap">
+            <div class="bar-val">14,200</div>
+            <div class="bar-track"><div class="bar-fill" style="height:62%"></div></div>
+            <div class="bar-label">MON</div>
+          </div>
+          <div class="bar-wrap">
+            <div class="bar-val">16,800</div>
+            <div class="bar-track"><div class="bar-fill" style="height:73%"></div></div>
+            <div class="bar-label">TUE</div>
+          </div>
+          <div class="bar-wrap">
+            <div class="bar-val">12,400</div>
+            <div class="bar-track" style="background:#fef2f2"><div class="bar-fill" style="height:54%;background:linear-gradient(180deg,#dc2626,#fca5a5)"></div></div>
+            <div class="bar-label">WED</div>
+          </div>
+          <div class="bar-wrap">
+            <div class="bar-val">17,900</div>
+            <div class="bar-track"><div class="bar-fill" style="height:78%"></div></div>
+            <div class="bar-label">THU</div>
+          </div>
+          <div class="bar-wrap">
+            <div class="bar-val">19,500</div>
+            <div class="bar-track"><div class="bar-fill" style="height:85%"></div></div>
+            <div class="bar-label">FRI</div>
+          </div>
+          <div class="bar-wrap">
+            <div class="bar-val">16,100</div>
+            <div class="bar-track" style="background:#fffbeb"><div class="bar-fill" style="height:70%;background:linear-gradient(180deg,#d97706,#fcd34d)"></div></div>
+            <div class="bar-label">SAT</div>
+          </div>
+          <div class="bar-wrap">
+            <div class="bar-val" style="color:var(--mpesa-dark);font-weight:700">18,240</div>
+            <div class="bar-track" style="background:#e8f5e9"><div class="bar-fill" style="height:80%"></div></div>
+            <div class="bar-label" style="color:var(--mpesa-dark);font-weight:700">TODAY</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:16px;margin-top:12px">
+          <span style="font-family:var(--mono);font-size:.57rem;color:var(--mpesa-dark)">■ On-track</span>
+          <span style="font-family:var(--mono);font-size:.57rem;color:var(--danger)">■ Below avg</span>
+          <span style="font-family:var(--mono);font-size:.57rem;color:var(--warn)">■ Partial</span>
+          <span style="font-family:var(--mono);font-size:.57rem;color:var(--mpesa)">■ Today</span>
+        </div>
+      </div>
+
+      <!-- Reconciliation Status by Product -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Stock vs. M-Pesa Reconciliation</div>
+            <div class="card-sub">Sales confirmed against inventory deductions</div>
+          </div>
+          <span class="tag tag-warn">1 Gap</span>
+        </div>
+        <div class="recon-row">
+          <div class="recon-label">Vanilla Yoghurt 250ml<span class="recon-sub">Sold 18 · Paid 18 · Match ✓</span></div>
+          <div class="recon-track"><div class="recon-fill" style="width:100%"></div></div>
+          <div class="recon-val up">100%</div>
+        </div>
+        <div class="recon-row">
+          <div class="recon-label">Raw Honey 500g<span class="recon-sub">Sold 4 · Paid 4 · Match ✓</span></div>
+          <div class="recon-track"><div class="recon-fill" style="width:100%"></div></div>
+          <div class="recon-val up">100%</div>
+        </div>
+        <div class="recon-row">
+          <div class="recon-label">Mala 500ml<span class="recon-sub">Sold 24 · Paid 24 · Match ✓</span></div>
+          <div class="recon-track"><div class="recon-fill" style="width:97%"></div></div>
+          <div class="recon-val up">97%</div>
+        </div>
+        <div class="recon-row">
+          <div class="recon-label">Strawberry Yoghurt<span class="recon-sub">Sold 10 · Paid 8 · Gap: 2 units</span></div>
+          <div class="recon-track"><div class="recon-fill recon-fill-warn" style="width:80%"></div></div>
+          <div class="recon-val warn">80%</div>
+        </div>
+        <div class="recon-row">
+          <div class="recon-label">Mala 1L<span class="recon-sub">Sold 12 · Paid 12 · Match ✓</span></div>
+          <div class="recon-track"><div class="recon-fill" style="width:100%"></div></div>
+          <div class="recon-val up">100%</div>
+        </div>
+        <div class="recon-row">
+          <div class="recon-label">Flavoured Yoghurt 500ml<span class="recon-sub">Sold 6 · Paid 4 · Gap: 2 units</span></div>
+          <div class="recon-track"><div class="recon-fill recon-fill-danger" style="width:67%"></div></div>
+          <div class="recon-val down">67%</div>
+        </div>
+      </div>
+
+      <!-- Alerts & Pending -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Reconciliation Alerts</div>
+            <div class="card-sub">Unmatched payments · stock discrepancies</div>
+          </div>
+          <span class="tag tag-warn">2 Open</span>
+        </div>
+
+        <!-- Alert 1 -->
+        <div style="display:flex;gap:11px;padding:10px 0;border-bottom:1px solid var(--border);align-items:flex-start">
+          <div class="tx-icon" style="background:#fffbeb;color:var(--warn);flex-shrink:0;margin-top:1px">⚠</div>
+          <div>
+            <div style="font-size:.78rem;font-weight:700">Unmatched Payment — KSh 750</div>
+            <div style="font-family:var(--mono);font-size:.6rem;color:var(--text2);margin-top:2px;line-height:1.45">Transaction QHK4N7O0 received KSh 750 with no matching SKU or customer reference. Possible walk-in cash-out or mis-tagged payment.</div>
+            <div style="font-family:var(--mono);font-size:.56rem;color:var(--muted);margin-top:4px">Today · 13:55</div>
+          </div>
+        </div>
+
+        <!-- Alert 2 -->
+        <div style="display:flex;gap:11px;padding:10px 0;border-bottom:1px solid var(--border);align-items:flex-start">
+          <div class="tx-icon" style="background:#fffbeb;color:var(--warn);flex-shrink:0;margin-top:1px">⚡</div>
+          <div>
+            <div style="font-size:.78rem;font-weight:700">Strawberry Yoghurt — 2 Units Gap</div>
+            <div style="font-family:var(--mono);font-size:.6rem;color:var(--text2);margin-top:2px;line-height:1.45">10 units show sold in inventory but only 8 M-Pesa payments captured. Possible manual sale, spoilage, or recording delay.</div>
+            <div style="font-family:var(--mono);font-size:.56rem;color:var(--muted);margin-top:4px">Today · Petro Shop</div>
+          </div>
+        </div>
+
+        <!-- Info -->
+        <div style="display:flex;gap:11px;padding:10px 0;align-items:flex-start">
+          <div class="tx-icon" style="background:var(--b6);color:var(--b1);flex-shrink:0;margin-top:1px">✓</div>
+          <div>
+            <div style="font-size:.78rem;font-weight:700">Yesterday Fully Reconciled</div>
+            <div style="font-family:var(--mono);font-size:.6rem;color:var(--text2);margin-top:2px;line-height:1.45">All 29 transactions from Tuesday 10 June confirmed and matched. KSh 16,100 fully accounted across all channels.</div>
+            <div style="font-family:var(--mono);font-size:.56rem;color:var(--muted);margin-top:4px">Yesterday · 11:59 PM</div>
+          </div>
+        </div>
+
+        <div class="alert-box" style="margin-top:4px">
+          <div class="a-label">Recommended Action</div>
+          <div class="a-text">Review Petro Shop manual sales log for Strawberry Yoghurt. Investigate QHK4N7O0 sender number before end-of-day close.</div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</main>
+</body>
+</html>
